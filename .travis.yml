@@ -1,0 +1,19 @@
+language: node_js
+node_js:
+  - "4.2.1"
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - gcc-5
+    - g++-5
+before_install:
+  - npm install -g grunt-cli
+  - uname -a
+  - ls /dev/v*
+  - ls /usr/include/linux/v*.h
+install:
+  - CC=gcc-5 CXX=g++-5 npm install
+script:
+  - grunt

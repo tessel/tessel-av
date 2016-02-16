@@ -1,0 +1,32 @@
+{
+  "loopfunc": true,
+  "laxcomma": true,
+  "curly": true,
+  "eqeqeq": true,
+  "immed": true,
+  "latedef": false,
+  "newcap": false,
+  "noarg": true,
+  "sub": true,
+  "undef": true,
+  "boss": true,
+  "eqnull": true,
+  "node": true,
+  "strict": false,
+  "esnext": true,
+  "unused": true,
+  "globals": {
+    "exports": true,
+    "Promise": true,
+    "IS_TEST_ENV": true,
+    "cp": true,
+    "events": true,
+    "path": true,
+    "stream": true,
+    "Emitter": true,
+    "Readable": true,
+    "bindings": true,
+    "sinon": true,
+    "av": true
+  }
+}
