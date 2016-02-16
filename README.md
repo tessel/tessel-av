@@ -1,5 +1,7 @@
 # tessel-av
 
+[![Travis Build Status](https://travis-ci.org/tessel/tessel-av.svg?branch=master)](https://travis-ci.org/tessel/tessel-av) 
+
 USB Camera, Microphone and Speaker API for Tessel 2
 
 
