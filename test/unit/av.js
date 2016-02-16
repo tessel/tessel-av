@@ -15,6 +15,7 @@ exports['av'] = {
     test.equal(av.hasOwnProperty('Camera'), true);
     test.equal(av.hasOwnProperty('Microphone'), true);
     test.equal(av.hasOwnProperty('Speaker'), true);
+    test.equal(av.hasOwnProperty('Video'), true);
     test.done();
   }
 };
