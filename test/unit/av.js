@@ -45,6 +45,9 @@ exports['av.Camera'] = {
   captureDarwin: function(test) {
     test.expect(4);
 
+    var isd = av.isDarwin();
+    av.isDarwin(true);
+
     var cam = new av.Camera();
 
     test.equal(typeof cam.capture, 'function');
@@ -63,6 +66,7 @@ exports['av.Camera'] = {
     });
 
     capStream.on('end', function() {
+      av.isDarwin(isd);
       test.done();
     });
   },
