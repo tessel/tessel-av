@@ -10,7 +10,7 @@ exports['av'] = {
   },
 
   api: function(test) {
-    test.expect(3);
+    test.expect(4);
 
     test.equal(av.hasOwnProperty('Camera'), true);
     test.equal(av.hasOwnProperty('Microphone'), true);
