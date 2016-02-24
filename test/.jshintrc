@@ -27,6 +27,8 @@
     "Readable": true,
     "bindings": true,
     "sinon": true,
-    "av": true
+    "av": true,
+    "Camera": true,
+    "Speaker": true
   }
 }

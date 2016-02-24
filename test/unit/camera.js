@@ -1,24 +1,7 @@
-exports['av'] = {
-  setUp: function(done) {
-    this.sandbox = sinon.sandbox.create();
-    done();
-  },
-
-  tearDown: function(done) {
-    this.sandbox.restore();
-    done();
-  },
-
-  api: function(test) {
-    test.expect(4);
-
-    test.equal(av.hasOwnProperty('Camera'), true);
-    test.equal(av.hasOwnProperty('Microphone'), true);
-    test.equal(av.hasOwnProperty('Speaker'), true);
-    test.equal(av.hasOwnProperty('Video'), true);
-    test.done();
-  }
-};
+var isDarwin = Camera.isDarwin;
+var CaptureStream = Camera.CaptureStream;
+var FSWebcam = Camera.FSWebcam;
+var binding = Camera.binding;
 
 exports['av.Camera'] = {
   setUp: function(done) {
@@ -46,20 +29,20 @@ exports['av.Camera'] = {
   captureDarwin: function(test) {
     test.expect(4);
 
-    var isd = av.isDarwin();
-    av.isDarwin(true);
+    var isd = isDarwin();
+    isDarwin(true);
 
     var cam = new av.Camera();
 
     test.equal(typeof cam.capture, 'function');
 
-    this.capture = this.sandbox.stub(av.binding, 'capture', function() {
+    this.capture = this.sandbox.stub(binding, 'capture', function() {
       return new Buffer([0]);
     });
 
     var capStream = cam.capture();
 
-    test.equal(capStream instanceof av.CaptureStream, true);
+    test.equal(capStream instanceof CaptureStream, true);
     test.equal(capStream instanceof Readable, true);
 
     capStream.on('data', function() {
@@ -67,22 +50,22 @@ exports['av.Camera'] = {
     });
 
     capStream.on('end', function() {
-      av.isDarwin(isd);
+      isDarwin(isd);
       test.done();
     });
   },
   captureFswebcam: function(test) {
     test.expect(4);
 
-    var isd = av.isDarwin();
+    var isd = isDarwin();
 
-    av.isDarwin(false);
+    isDarwin(false);
 
     var cam = new av.Camera();
 
     test.equal(typeof cam.capture, 'function');
 
-    this.capture = this.sandbox.stub(av.FSWebcam.prototype, 'capture', function(callback) {
+    this.capture = this.sandbox.stub(FSWebcam.prototype, 'capture', function(callback) {
       setImmediate(function() {
         callback(null, new Buffer([0]));
       });
@@ -90,7 +73,7 @@ exports['av.Camera'] = {
 
     var capStream = cam.capture();
 
-    test.equal(capStream instanceof av.CaptureStream, true);
+    test.equal(capStream instanceof CaptureStream, true);
     test.equal(capStream instanceof Readable, true);
 
     capStream.on('data', function() {
@@ -98,7 +81,7 @@ exports['av.Camera'] = {
     });
 
     capStream.on('end', function() {
-      av.isDarwin(isd);
+      isDarwin(isd);
       test.done();
     });
   }

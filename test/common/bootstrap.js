@@ -17,8 +17,10 @@ global.sinon = require('sinon');
 
 
 // Module
-global.av = require('../../lib/index.js');
+global.av = require('../../lib/index');
+global.Camera = require('../../lib/camera');
+global.Speaker = require('../../lib/speaker');
 
 // Binaries
-global.isDarwin = process.platform === 'darwin';
-global.binding = global.isDarwin && require('bindings')('capture.node');
+// global.isDarwin = process.platform === 'darwin';
+// global.binding = global.isDarwin && require('bindings')('capture.node');
