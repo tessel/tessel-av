@@ -89,10 +89,17 @@ sound.on('pause', function() {
 
 
 
-> Remember to always include static assets in your project's .tesselinclude file. For example, to use the file shown above, you'd make a .tesselinclude file like this: 
+> Remember to always include static assets in your project's `.tesselinclude` file. For example, to ensure the `song.mp3` file is deployed to your Tessel 2, you'll create a file called `.tesselinclude` that contains the following:
 > ```
 > song.mp3
 > ```
+> 
+> You may find it easier to put all static assets in a sub-directory, such as `public/`, or similar. Then you can include _all_ files and sub-directories by creating a `.tesselinclude` file and listing that assets directory like this: 
+> 
+> ```
+> public
+> ```
+> 
 
 ## License
 
