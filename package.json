@@ -1,6 +1,6 @@
 {
   "name": "tessel-av",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Cross-platform audio record/playback and video recording.",
   "repository": "https://github.com/tessel/tessel-av",
   "main": "lib/index.js",
@@ -9,8 +9,14 @@
   },
   "author": "Rick Waldron <waldron.rick@gmail.com>",
   "contributors": [
-    { "name": "Tim Cameron Ryan", "email": "<tim@technical.io>" },
-    { "name": "bellbind", "email": "<bellbind@gmail.com>" }
+    {
+      "name": "Tim Cameron Ryan",
+      "email": "<tim@technical.io>"
+    },
+    {
+      "name": "bellbind",
+      "email": "<bellbind@gmail.com>"
+    }
   ],
   "license": "MIT",
   "dependencies": {
