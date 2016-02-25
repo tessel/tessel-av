@@ -6,7 +6,7 @@ USB Audio and Video API for Tessel 2.
 
 
 - Camera, for still shots (video coming soon)
-- Microphone, for sound recording
+- Microphone, for sound recording (coming soon)
 - Speaker, for sound playback 
 
 
@@ -56,14 +56,17 @@ capture.pipe(fs.createWriteStream('captures/captured-via-pipe.jpg'));
 
 ### av.Speaker Events
 
-
 - **`end`** when playback ends.
 - **`play`** after `play()` is called.
 - **`pause`** after `pause()` is called.
 - **`stop`** after `stop()` is called.
-- **`timeupdate`** approximately every 100ms. Delivers an approximation of the playback time in milliseconds.
+- **`timeupdate`** approximately every 100ms. Delivers an approximation of the playback time in seconds, as `ssss.ddd`.
 
-The following is an example of the API and events working together; the sound will play, then pause for a second just after the 2 second mark, it will resume playback from the 10 second mark, play until just after the 12 second mark, where it will stop and then play from the beginning again. 
+The following is an example of the API and events working together: 
+
+- The sound will play from the beginning
+- After approximate 2 seconds, the sound will pause
+- After 1 second pause, sound will resume  , it will resume playback from the 10 second mark, play until just after the 12 second mark, where it will stop and then play from the beginning again. 
 
 ```js
 var av = require('tessel-av');
@@ -72,12 +75,14 @@ var sound = new av.Speaker(mp3);
 
 sound.play();
 
-sound.on('timeupdate', function(data) {
-  if (data >= 2 && data <= 3) {
+sound.on('timeupdate', function(seconds) {
+  seconds = Math.round(seconds);
+
+  if (seconds === 2) {
     this.pause();
   }
 
-  if (data > 12) {
+  if (seconds > 12) {
     this.stop().play();
   }
 });
