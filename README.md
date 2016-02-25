@@ -17,14 +17,12 @@ npm install tessel-av
 ## Examples
 
 
-### av.Camera
-
-#### av.Camera API 
+### av.Camera API 
 
 - **`capture`** Capture a still shot. Returns a CaptureStream of jpeg encoded data. 
 
 
-#### av.Camera Events
+### av.Camera Events
 
 - **`data`** Emitted when capture has data.
 - **`end`** Emitted when capture ends.
@@ -47,9 +45,7 @@ capture.pipe(fs.createWriteStream('captures/captured-via-pipe.jpg'));
 
 
 
-### av.Speaker 
-
-#### av.Speaker API 
+### av.Speaker API 
 
 - **`play([seconds])`** Play the specified file. Optionally provide a time to start at in seconds. Allowed formats: 
     + `hh:mm:ss` (string)
@@ -58,7 +54,7 @@ capture.pipe(fs.createWriteStream('captures/captured-via-pipe.jpg'));
 - **`pause()`** Pause playback of the current file. 
 - **`stop()`** Stop playback of the current file (calling `play()` will start the playback from the beginning.)
 
-#### av.Speaker Events
+### av.Speaker Events
 
 
 - **`end`** Emitted when playback ends.
