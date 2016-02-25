@@ -5,8 +5,7 @@
   "repository": "https://github.com/tessel/tessel-av",
   "main": "lib/index.js",
   "scripts": {
-    "test": "grunt",
-    "postinstall": "node scripts/postinstall"
+    "test": "grunt"
   },
   "author": "Rick Waldron <waldron.rick@gmail.com>",
   "contributors": [
