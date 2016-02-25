@@ -1,2 +1,11 @@
 node_modules
 captures
+notes
+assets
+build
+*.log
+*.node
+.travis.yml
+.jscsrc
+.jshintrc
+test
