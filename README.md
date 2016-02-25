@@ -24,8 +24,8 @@ npm install tessel-av
 
 ### av.Camera Events
 
-- **`data`** Emitted when capture has data.
-- **`end`** Emitted when capture ends.
+- **`data`** when capture has data.
+- **`end`** when capture ends.
 
 The following is an example of using both the `data` event and the capture stream to write the same JPEG data to two different files. 
 
@@ -57,11 +57,11 @@ capture.pipe(fs.createWriteStream('captures/captured-via-pipe.jpg'));
 ### av.Speaker Events
 
 
-- **`end`** Emitted when playback ends.
-- **`play`** Emitted afer `play()` is called.
-- **`pause`** Emitted afer `pause()` is called.
-- **`stop`** Emitted afer `stop()` is called.
-- **`timeupdate`** Emitted approximately every 100ms. Delivers an approximation of the playback time in milliseconds.
+- **`end`** when playback ends.
+- **`play`** after `play()` is called.
+- **`pause`** after `pause()` is called.
+- **`stop`** after `stop()` is called.
+- **`timeupdate`** approximately every 100ms. Delivers an approximation of the playback time in milliseconds.
 
 The following is an example of the API and events working together; the sound will play, then pause for a second just after the 2 second mark, it will resume playback from the 10 second mark, play until just after the 12 second mark, where it will stop and then play from the beginning again. 
 
