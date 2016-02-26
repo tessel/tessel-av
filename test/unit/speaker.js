@@ -55,10 +55,11 @@ exports['av.Speaker'] = {
   },
 
   play: function(test) {
-    test.expect(3);
+    test.expect(4);
     var speaker = new av.Speaker('foo.mp3');
     speaker.play();
 
+    test.equal(speaker.isPlaying, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'madplay');
     test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 0]);
@@ -120,11 +121,14 @@ exports['av.Speaker'] = {
   },
 
   pause: function(test) {
-    test.expect(2);
+    test.expect(4);
     this.clock = this.sandbox.useFakeTimers();
     var speaker = new av.Speaker('foo.mp3');
     speaker.play();
+    test.equal(speaker.isPlaying, true);
+
     speaker.on('pause', () => {
+      test.equal(speaker.isPlaying, false);
       test.equal(this.emitter.kill.callCount, 1);
       test.equal(this.emitter.kill.lastCall.args[0], 'SIGTERM');
       test.done();
