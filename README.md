@@ -69,6 +69,7 @@ The following is an example of the API and events working together:
 - After 1 second pause, sound will resume  , it will resume playback from the 10 second mark, play until just after the 12 second mark, where it will stop and then play from the beginning again. 
 
 ```js
+var path = require('path');
 var av = require('tessel-av');
 var mp3 = path.join(__dirname, '20-second-nonsense.mp3');
 var sound = new av.Speaker(mp3);
