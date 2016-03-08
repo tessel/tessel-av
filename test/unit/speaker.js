@@ -3,6 +3,7 @@ exports['av.Speaker'] = {
     this.sandbox = sinon.sandbox.create();
     this.emitter = new Emitter();
     this.emitter.kill = this.sandbox.stub();
+    this.emitter.stderr = new Emitter();
     this.spawn = this.sandbox.stub(cp, 'spawn', () => this.emitter);
     done();
   },
@@ -63,6 +64,25 @@ exports['av.Speaker'] = {
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'madplay');
     test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 0]);
+    test.done();
+  },
+
+  playError: function(test) {
+    test.expect(2);
+
+    var consoleerror = this.sandbox.stub(console, 'error');
+    var speaker = new av.Speaker('foo.mp3');
+
+    speaker.play();
+
+    var error = `MPEG Audio Decoder X.X.X (beta) - Copyright © 2000-2004 Robert Leslie et al.
+                  foo.mp3: No such file or directory`;
+
+    this.emitter.stderr.emit('data', new Buffer(error));
+    this.emitter.emit('exit', 4);
+
+    test.equal(consoleerror.callCount, 1);
+    test.equal(consoleerror.lastCall.args[0], 'foo.mp3: No such file or directory');
     test.done();
   },
 
