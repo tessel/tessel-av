@@ -1,6 +1,6 @@
 {
   "name": "tessel-av",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Cross-platform audio record/playback and video recording.",
   "repository": "https://github.com/tessel/tessel-av",
   "main": "lib/index.js",
