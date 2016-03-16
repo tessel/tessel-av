@@ -19,6 +19,7 @@ global.sinon = require('sinon');
 // Module
 global.av = require('../../lib/index');
 global.Camera = require('../../lib/camera');
+global.Player = require('../../lib/player');
 global.Speaker = require('../../lib/speaker');
 
 // Binaries

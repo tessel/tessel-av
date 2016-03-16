@@ -29,6 +29,7 @@
     "sinon": true,
     "av": true,
     "Camera": true,
+    "Player": true,
     "Speaker": true
   }
 }

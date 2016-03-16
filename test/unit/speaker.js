@@ -2,9 +2,12 @@ exports['av.Speaker'] = {
   setUp: function(done) {
     this.sandbox = sinon.sandbox.create();
     this.emitter = new Emitter();
-    this.emitter.kill = this.sandbox.stub();
-    this.emitter.stderr = new Emitter();
-    this.spawn = this.sandbox.stub(cp, 'spawn', () => this.emitter);
+    this.spawn = this.sandbox.stub(cp, 'spawn', () => {
+      this.emitter = new Emitter();
+      this.emitter.kill = this.sandbox.stub();
+      this.emitter.stderr = new Emitter();
+      return this.emitter;
+    });
     done();
   },
 
@@ -19,129 +22,226 @@ exports['av.Speaker'] = {
     test.done();
   },
 
-  emitter: function(test) {
+  fileArgGetsAPlayerInstance: function(test) {
     test.expect(1);
-    test.equal((new av.Speaker('foo.mp3')) instanceof Emitter, true);
+    test.equal((new av.Speaker('foo.mp3')) instanceof Player, true);
     test.done();
   },
 
-  unsupportedExtention: function(test) {
-    test.expect(6);
-    test.throws(() => {
-      new av.Speaker();
-    });
-    test.throws(() => {
-      new av.Speaker('foo.wav');
-    });
-    test.throws(() => {
-      new av.Speaker('foo.m4a');
-    });
-    test.throws(() => {
-      new av.Speaker('foo.mov');
-    });
-    test.throws(() => {
-      new av.Speaker('foo.ogg');
-    });
-    test.throws(() => {
-      new av.Speaker('foo.opus');
-    });
+  emitter: function(test) {
+    test.expect(1);
+    test.equal((new av.Speaker()) instanceof Emitter, true);
     test.done();
   },
 
   currentTime: function(test) {
     test.expect(1);
-    var speaker = new av.Speaker('foo.mp3');
+    var speaker = new av.Speaker();
     test.equal(speaker.currentTime, 0);
     test.done();
   },
 
-  play: function(test) {
-    test.expect(4);
-    var speaker = new av.Speaker('foo.mp3');
-    speaker.play();
-
-    test.equal(speaker.isPlaying, true);
-    test.equal(this.spawn.callCount, 1);
-    test.equal(this.spawn.lastCall.args[0], 'madplay');
-    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 0]);
-    test.done();
-  },
-
-  playError: function(test) {
+  sayNothing: function(test) {
     test.expect(2);
+    var speaker = new av.Speaker();
+    speaker.say();
 
-    var consoleerror = this.sandbox.stub(console, 'error');
-    var speaker = new av.Speaker('foo.mp3');
-
-    speaker.play();
-
-    var error = `MPEG Audio Decoder X.X.X (beta) - Copyright © 2000-2004 Robert Leslie et al.
-                  foo.mp3: No such file or directory`;
-
-    this.emitter.stderr.emit('data', new Buffer(error));
-    this.emitter.emit('exit', 4);
-
-    test.equal(consoleerror.callCount, 1);
-    test.equal(consoleerror.lastCall.args[0], 'foo.mp3: No such file or directory');
+    test.equal(speaker.isSpeaking, false);
+    test.equal(this.spawn.callCount, 0);
     test.done();
   },
 
-  playPausePlay: function(test) {
-    test.expect(5);
-    this.clock = this.sandbox.useFakeTimers();
-    var speaker = new av.Speaker('foo.mp3');
+  sayNull: function(test) {
+    test.expect(2);
+    var speaker = new av.Speaker();
+    speaker.say(null);
 
-    speaker.play();
+    test.equal(speaker.isSpeaking, false);
+    test.equal(this.spawn.callCount, 0);
+    test.done();
+  },
 
-    this.clock.tick(1100);
+  sayUndefined: function(test) {
+    test.expect(2);
+    var speaker = new av.Speaker();
+    speaker.say(undefined);
 
-    speaker.pause();
+    test.equal(speaker.isSpeaking, false);
+    test.equal(this.spawn.callCount, 0);
+    test.done();
+  },
 
-    this.clock.tick(1);
+  sayEmpty: function(test) {
+    test.expect(2);
+    var speaker = new av.Speaker();
+    speaker.say('');
 
-    speaker.play();
+    test.equal(speaker.isSpeaking, false);
+    test.equal(this.spawn.callCount, 0);
+    test.done();
+  },
+
+  sayZero: function(test) {
+    test.expect(4);
+    var speaker = new av.Speaker();
+    speaker.say(0);
+
+    test.equal(speaker.isSpeaking, true);
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'espeak');
+    test.deepEqual(this.spawn.lastCall.args[1], ['0']);
+    test.done();
+  },
+
+  sayString: function(test) {
+    test.expect(4);
+    var speaker = new av.Speaker();
+    speaker.say('hello');
+
+    test.equal(speaker.isSpeaking, true);
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'espeak');
+    test.deepEqual(this.spawn.lastCall.args[1], ['hello']);
+    test.done();
+  },
+
+  sayManyWords: function(test) {
+    test.expect(4);
+    var speaker = new av.Speaker();
+    var message = `Hello Dave, you're looking well today`;
+    speaker.say(message);
+
+    test.equal(speaker.isSpeaking, true);
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'espeak');
+    test.deepEqual(this.spawn.lastCall.args[1], [message]);
+    test.done();
+  },
+
+  sayFromArrayA: function(test) {
+    test.expect(4);
+    var speaker = new av.Speaker();
+    var a = ['foo', '-a', 10, '-p', 50];
+
+    speaker.say(a);
+
+    test.equal(speaker.isSpeaking, true);
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.firstCall.args[0], 'espeak');
+    test.deepEqual(this.spawn.firstCall.args[1], a);
+
+    test.done();
+  },
+
+  sayFromArrayB: function(test) {
+    test.expect(4);
+    var speaker = new av.Speaker();
+    var b = ['-a', 10, '-p', 50, 'foo'];
+
+    speaker.say(b);
+
+    test.equal(speaker.isSpeaking, true);
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'espeak');
+    test.deepEqual(this.spawn.lastCall.args[1], b);
+
+    test.done();
+  },
+
+  sayFromObject: function(test) {
+    test.expect(4);
+    var speaker = new av.Speaker();
+    var args = ['foo', '-a', 10, '-p', 50];
+    speaker.say(args);
+
+    test.equal(speaker.isSpeaking, true);
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'espeak');
+    test.deepEqual(this.spawn.lastCall.args[1], args);
+    test.done();
+  },
+
+  sayQueues: function(test) {
+    test.expect(1);
+
+    var speaker = new av.Speaker();
+    var a = ['foo', '-a', 10, '-p', 50];
+    var b = ['-a', 10, '-p', 50, 'foo'];
+
+    speaker.say(a);
+    speaker.say(b);
+
+
+    this.emitter.emit('exit', 0, null);
+    this.emitter.emit('exit', 0, null);
 
     test.equal(this.spawn.callCount, 2);
-    test.equal(this.spawn.firstCall.args[0], 'madplay');
-    test.equal(this.spawn.lastCall.args[0], 'madplay');
-    test.deepEqual(this.spawn.firstCall.args[1], ['foo.mp3', '-s', 0]);
-    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 1]);
+
     test.done();
   },
 
-  playEvent: function(test) {
+  emptyQueueEmitsEmpty: function(test) {
+    test.expect(2);
+    var ended = this.sandbox.spy();
+    var empty = this.sandbox.spy();
+
+    var speaker = new av.Speaker();
+    var a = ['foo', '-a', 10, '-p', 50];
+    var b = ['-a', 10, '-p', 50, 'foo'];
+    var c = ['-p', 50, '-a', 10, 'foo'];
+
+    speaker.say(a);
+    speaker.say(b);
+    speaker.say(c);
+
+    speaker.on('ended', ended);
+    speaker.on('empty', empty);
+
+
+    this.emitter.emit('exit', 0, null); // a is done
+    this.emitter.emit('exit', 0, null); // b is done
+    this.emitter.emit('exit', 0, null); // c is done
+
+    test.equal(ended.callCount, 3);
+    test.equal(empty.callCount, 1);
+
+    test.done();
+  },
+
+  sayEvent: function(test) {
     test.expect(1);
-    var speaker = new av.Speaker('foo.mp3');
-    speaker.on('play', () => {
+    var speaker = new av.Speaker();
+    speaker.on('say', () => {
       test.ok(true);
       test.done();
     });
-    speaker.play();
+    speaker.say('Hi!');
   },
 
   timeupdate: function(test) {
     test.expect(0);
     this.clock = this.sandbox.useFakeTimers();
-    var speaker = new av.Speaker('foo.mp3');
-    speaker.play();
+    var speaker = new av.Speaker();
+    speaker.say('Hi!');
     speaker.on('timeupdate', test.done);
     this.clock.tick(101);
   },
 
-  end: function(test) {
+  ended: function(test) {
     test.expect(0);
     this.clock = this.sandbox.useFakeTimers();
-    var speaker = new av.Speaker('foo.mp3');
-    speaker.play();
-    speaker.on('end', test.done);
-    this.spawn.lastCall.returnValue.emit('exit', 0, null);
+    var speaker = new av.Speaker();
+    speaker.say('Hi!');
+    speaker.on('ended', test.done);
+
+    this.emitter.emit('exit', 0, null);
   },
 
   stop: function(test) {
     test.expect(2);
     this.clock = this.sandbox.useFakeTimers();
-    var speaker = new av.Speaker('foo.mp3');
-    speaker.play();
+    var speaker = new av.Speaker();
+    speaker.say('Hi!');
     speaker.on('stop', () => {
       test.equal(this.emitter.kill.callCount, 1);
       test.equal(this.emitter.kill.lastCall.args[0], 'SIGTERM');
@@ -153,8 +253,8 @@ exports['av.Speaker'] = {
   stopTwice: function(test) {
     test.expect(2);
     this.clock = this.sandbox.useFakeTimers();
-    var speaker = new av.Speaker('foo.mp3');
-    speaker.play();
+    var speaker = new av.Speaker();
+    speaker.say('Hi!');
     speaker.on('stop', () => {
       test.equal(this.emitter.kill.callCount, 1);
       test.equal(this.emitter.kill.lastCall.args[0], 'SIGTERM');
@@ -162,37 +262,4 @@ exports['av.Speaker'] = {
     });
     speaker.stop();
   },
-
-  pause: function(test) {
-    test.expect(4);
-    this.clock = this.sandbox.useFakeTimers();
-    var speaker = new av.Speaker('foo.mp3');
-    speaker.play();
-    test.equal(speaker.isPlaying, true);
-
-    speaker.on('pause', () => {
-      test.equal(speaker.isPlaying, false);
-      test.equal(this.emitter.kill.callCount, 1);
-      test.equal(this.emitter.kill.lastCall.args[0], 'SIGTERM');
-      test.done();
-    });
-    speaker.pause();
-  },
-
-  pauseTwice: function(test) {
-    test.expect(3);
-    this.clock = this.sandbox.useFakeTimers();
-    var speaker = new av.Speaker('foo.mp3');
-    speaker.play();
-    speaker.pause();
-
-    test.equal(this.emitter.kill.callCount, 1);
-    test.equal(this.emitter.kill.lastCall.args[0], 'SIGTERM');
-
-    speaker.pause();
-    test.equal(this.emitter.kill.callCount, 1);
-    test.done();
-  },
-
-  // To Do: more detailed tests for pause time updates
 };
