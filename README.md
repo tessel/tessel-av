@@ -191,7 +191,6 @@ Alternatively, each letter can be "queued":
 
 ```js
 var os = require('os');
-var path = require('path');
 var av = require('tessel-av');
 
 var alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
