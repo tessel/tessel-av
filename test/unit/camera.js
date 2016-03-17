@@ -1,11 +1,19 @@
-var isDarwin = Camera.isDarwin;
 var CaptureStream = Camera.CaptureStream;
-var FSWebcam = Camera.FSWebcam;
-var binding = Camera.binding;
 
 exports['av.Camera'] = {
   setUp: function(done) {
     this.sandbox = sinon.sandbox.create();
+    this.emitter = new Emitter();
+    this.spawn = this.sandbox.stub(cp, 'spawn', () => {
+      this.emitter = new Emitter();
+      this.emitter.kill = this.sandbox.stub();
+      this.emitter.stderr = new Emitter();
+      this.emitter.stdout = new Emitter();
+      return this.emitter;
+    });
+
+    this.write = this.sandbox.stub(Writable.prototype, 'write');
+
     done();
   },
 
@@ -26,63 +34,72 @@ exports['av.Camera'] = {
     test.done();
   },
 
-  captureDarwin: function(test) {
-    test.expect(4);
+  captureEmitter: function(test) {
+    test.expect(5);
 
-    var isd = isDarwin();
-    isDarwin(true);
-
+    var buffer = new Buffer([0]);
     var cam = new av.Camera();
 
     test.equal(typeof cam.capture, 'function');
 
-    this.capture = this.sandbox.stub(binding, 'capture', function() {
-      return new Buffer([0]);
-    });
+    var capture = cam.capture();
 
-    var capStream = cam.capture();
+    test.equal(capture instanceof CaptureStream, true);
+    test.equal(capture instanceof Readable, true);
 
-    test.equal(capStream instanceof CaptureStream, true);
-    test.equal(capStream instanceof Readable, true);
-
-    capStream.on('data', function() {
+    capture.on('data', function(data) {
+      test.equal(buffer.equals(data), true);
       test.ok(true);
     });
 
-    capStream.on('end', function() {
-      isDarwin(isd);
+    capture.on('end', function() {
       test.done();
     });
+
+    this.emitter.stdout.emit('data', buffer);
+    this.emitter.emit('close');
   },
-  captureFswebcam: function(test) {
+
+  capturePipe: function(test) {
+    // test.expect(5);
+
+    var buffer = new Buffer([0]);
+    var cam = new av.Camera();
+    var writable = new Writable();
+
+    writable._write = function(data) {
+      test.equal(buffer.equals(data), true);
+    };
+
+    writable.on('pipe', () => {
+      test.done();
+    });
+
+    cam.capture().pipe(writable);
+
+    this.emitter.stdout.emit('data', buffer);
+    this.emitter.emit('close');
+  },
+
+  stream: function(test) {
     test.expect(4);
-
-    var isd = isDarwin();
-
-    isDarwin(false);
 
     var cam = new av.Camera();
 
-    test.equal(typeof cam.capture, 'function');
+    var capture = this.sandbox.spy(cam, 'capture');
 
-    this.capture = this.sandbox.stub(FSWebcam.prototype, 'capture', function(callback) {
-      setImmediate(function() {
-        callback(null, new Buffer([0]));
-      });
+    var s = cam.stream();
+
+
+    test.equal(capture.callCount, 1);
+    test.deepEqual(capture.lastCall.args[0], {
+      stream: true,
+      pipe: true
     });
 
-    var capStream = cam.capture();
+    test.equal(s instanceof CaptureStream, true);
+    test.equal(s instanceof Readable, true);
 
-    test.equal(capStream instanceof CaptureStream, true);
-    test.equal(capStream instanceof Readable, true);
-
-    capStream.on('data', function() {
-      test.ok(true);
-    });
-
-    capStream.on('end', function() {
-      isDarwin(isd);
-      test.done();
-    });
+    test.done();
   }
 };

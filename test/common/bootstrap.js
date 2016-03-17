@@ -10,6 +10,7 @@ global.util = require('util');
 
 global.Emitter = events.EventEmitter;
 global.Readable = stream.Readable;
+global.Writable = stream.Writable;
 
 
 // Third Party
