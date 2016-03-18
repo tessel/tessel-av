@@ -89,7 +89,7 @@ exports['av.Speaker'] = {
     test.equal(speaker.isSpeaking, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'espeak');
-    test.deepEqual(this.spawn.lastCall.args[1], ['0']);
+    test.deepEqual(this.spawn.lastCall.args[1], [ '0', '-s', 130 ]);
     test.done();
   },
 
@@ -101,7 +101,7 @@ exports['av.Speaker'] = {
     test.equal(speaker.isSpeaking, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'espeak');
-    test.deepEqual(this.spawn.lastCall.args[1], ['hello']);
+    test.deepEqual(this.spawn.lastCall.args[1], ['hello', '-s', 130]);
     test.done();
   },
 
@@ -114,7 +114,7 @@ exports['av.Speaker'] = {
     test.equal(speaker.isSpeaking, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'espeak');
-    test.deepEqual(this.spawn.lastCall.args[1], [message]);
+    test.deepEqual(this.spawn.lastCall.args[1], [message, '-s', 130]);
     test.done();
   },
 
@@ -261,5 +261,15 @@ exports['av.Speaker'] = {
       test.done();
     });
     speaker.stop();
+  },
+
+  reasonableEspeakOptions: function(test) {
+    test.expect(1);
+    this.clock = this.sandbox.useFakeTimers();
+    var speaker = new av.Speaker();
+    speaker.say('Hi!');
+
+    test.deepEqual(this.spawn.lastCall.args[1], [ 'Hi!', '-s', 130 ]);
+    test.done();
   },
 };
