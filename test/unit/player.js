@@ -288,5 +288,103 @@ exports['av.Player'] = {
     test.done();
   },
 
+
+  playMp3ImpliedStartAtZero: function(test) {
+    test.expect(4);
+    var player = new av.Player('foo.mp3');
+    player.play();
+
+    test.equal(player.isPlaying, true);
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'madplay');
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 0]);
+    test.done();
+  },
+
+  playMp3ExplicitStartAtZero: function(test) {
+    test.expect(4);
+    var player = new av.Player('foo.mp3');
+    player.play(0);
+
+    test.equal(player.isPlaying, true);
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'madplay');
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 0]);
+    test.done();
+  },
+
+  playMp3ExplicitStartAtZeroString: function(test) {
+    test.expect(4);
+    var player = new av.Player('foo.mp3');
+    player.play('0');
+
+    test.equal(player.isPlaying, true);
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'madplay');
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 0]);
+    test.done();
+  },
+
+  playMp3ExplicitStartAtOne: function(test) {
+    test.expect(4);
+    var player = new av.Player('foo.mp3');
+    player.play(1);
+
+    test.equal(player.isPlaying, true);
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'madplay');
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 1]);
+    test.done();
+  },
+
+  playMp3ExplicitStartAtOneString: function(test) {
+    test.expect(4);
+    var player = new av.Player('foo.mp3');
+    player.play('1');
+
+    test.equal(player.isPlaying, true);
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'madplay');
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 1]);
+    test.done();
+  },
+
+  playMp3ExplicitStartAtTimeCodeTenMinutes: function(test) {
+    test.expect(4);
+    var player = new av.Player('foo.mp3');
+    // hh:mm:'foo.mp3'ss
+    player.play('00:10:00');
+
+    test.equal(player.isPlaying, true);
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'madplay');
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 600]);
+    test.done();
+  },
+
+  playMp3ExplicitStartAtTimeCodeTenSeconds: function(test) {
+    test.expect(4);
+    var player = new av.Player('foo.mp3');
+    player.play('00:00:10');
+
+    test.equal(player.isPlaying, true);
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'madplay');
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 10]);
+    test.done();
+  },
+
+  playAtTimeCodeSecondsDs: function(test) {
+    test.expect(4);
+    var player = new av.Player('foo.mp3');
+    player.play('10.250');
+
+    test.equal(player.isPlaying, true);
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'madplay');
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 10.25]);
+    test.done();
+  },
+
   // To Do: more detailed tests for pause time updates
 };
