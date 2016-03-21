@@ -33,15 +33,16 @@ The following is an example of using both the `data` event and the capture strea
 ```js
 var av = require('tessel-av');
 var fs = require('fs');
+var path = require('path');
 
 var camera = new av.Camera();
 var capture = camera.capture();
 
 capture.on('data', function(data) {
-  fs.writeFile('captures/captured-via-data-event.jpg', data);
+  fs.writeFile(path.join(__dirname, 'captures/captured-via-data-event.jpg'), data);
 });
 
-capture.pipe(fs.createWriteStream('captures/captured-via-pipe.jpg'));
+capture.pipe(fs.createWriteStream(path.join(__dirname, 'captures/captured-via-data-event.jpg')));
 ```
 
 

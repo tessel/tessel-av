@@ -289,7 +289,7 @@ exports['av.Player'] = {
   },
 
 
-  playMp3ImpliedStartAtZero: function(test) {
+  playImpliedStartAtZero: function(test) {
     test.expect(4);
     var player = new av.Player('foo.mp3');
     player.play();
@@ -301,7 +301,7 @@ exports['av.Player'] = {
     test.done();
   },
 
-  playMp3ExplicitStartAtZero: function(test) {
+  playExplicitStartAtZero: function(test) {
     test.expect(4);
     var player = new av.Player('foo.mp3');
     player.play(0);
@@ -313,7 +313,7 @@ exports['av.Player'] = {
     test.done();
   },
 
-  playMp3ExplicitStartAtZeroString: function(test) {
+  playExplicitStartAtZeroString: function(test) {
     test.expect(4);
     var player = new av.Player('foo.mp3');
     player.play('0');
@@ -325,7 +325,7 @@ exports['av.Player'] = {
     test.done();
   },
 
-  playMp3ExplicitStartAtOne: function(test) {
+  playExplicitStartAtOne: function(test) {
     test.expect(4);
     var player = new av.Player('foo.mp3');
     player.play(1);
@@ -337,7 +337,7 @@ exports['av.Player'] = {
     test.done();
   },
 
-  playMp3ExplicitStartAtOneString: function(test) {
+  playExplicitStartAtOneString: function(test) {
     test.expect(4);
     var player = new av.Player('foo.mp3');
     player.play('1');
@@ -349,7 +349,7 @@ exports['av.Player'] = {
     test.done();
   },
 
-  playMp3ExplicitStartAtTimeCodeTenMinutes: function(test) {
+  playExplicitStartAtTimeCodeTenMinutes: function(test) {
     test.expect(4);
     var player = new av.Player('foo.mp3');
     // hh:mm:'foo.mp3'ss
@@ -362,7 +362,7 @@ exports['av.Player'] = {
     test.done();
   },
 
-  playMp3ExplicitStartAtTimeCodeTenSeconds: function(test) {
+  playExplicitStartAtTimeCodeTenSeconds: function(test) {
     test.expect(4);
     var player = new av.Player('foo.mp3');
     player.play('00:00:10');
