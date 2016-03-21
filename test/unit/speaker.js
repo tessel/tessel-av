@@ -89,7 +89,7 @@ exports['av.Speaker'] = {
     test.equal(speaker.isSpeaking, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'espeak');
-    test.deepEqual(this.spawn.lastCall.args[1], [ '0', '-s', 130 ]);
+    test.deepEqual(this.spawn.lastCall.args[1], ['0', '-s', 130]);
     test.done();
   },
 
@@ -269,7 +269,7 @@ exports['av.Speaker'] = {
     var speaker = new av.Speaker();
     speaker.say('Hi!');
 
-    test.deepEqual(this.spawn.lastCall.args[1], [ 'Hi!', '-s', 130 ]);
+    test.deepEqual(this.spawn.lastCall.args[1], ['Hi!', '-s', 130]);
     test.done();
   },
 };

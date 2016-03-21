@@ -26,10 +26,7 @@ exports['av.Player'] = {
   },
 
   unsupportedExtention: function(test) {
-    test.expect(6);
-    test.throws(() => {
-      new av.Player();
-    });
+    test.expect(5);
     test.throws(() => {
       new av.Player('foo.wav');
     });
@@ -50,17 +47,17 @@ exports['av.Player'] = {
 
   currentTime: function(test) {
     test.expect(1);
-    var speaker = new av.Player('foo.mp3');
-    test.equal(speaker.currentTime, 0);
+    var player = new av.Player('foo.mp3');
+    test.equal(player.currentTime, 0);
     test.done();
   },
 
   play: function(test) {
     test.expect(4);
-    var speaker = new av.Player('foo.mp3');
-    speaker.play();
+    var player = new av.Player('foo.mp3');
+    player.play();
 
-    test.equal(speaker.isPlaying, true);
+    test.equal(player.isPlaying, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'madplay');
     test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 0]);
@@ -71,9 +68,9 @@ exports['av.Player'] = {
     test.expect(2);
 
     var consoleerror = this.sandbox.stub(console, 'error');
-    var speaker = new av.Player('foo.mp3');
+    var player = new av.Player('foo.mp3');
 
-    speaker.play();
+    player.play();
 
     var error = `MPEG Audio Decoder X.X.X (beta) - Copyright © 2000-2004 Robert Leslie et al.
                   foo.mp3: No such file or directory`;
@@ -89,17 +86,17 @@ exports['av.Player'] = {
   playPausePlay: function(test) {
     test.expect(5);
     this.clock = this.sandbox.useFakeTimers();
-    var speaker = new av.Player('foo.mp3');
+    var player = new av.Player('foo.mp3');
 
-    speaker.play();
+    player.play();
 
     this.clock.tick(1100);
 
-    speaker.pause();
+    player.pause();
 
     this.clock.tick(1);
 
-    speaker.play();
+    player.play();
 
     test.equal(this.spawn.callCount, 2);
     test.equal(this.spawn.firstCall.args[0], 'madplay');
@@ -111,86 +108,183 @@ exports['av.Player'] = {
 
   playEvent: function(test) {
     test.expect(1);
-    var speaker = new av.Player('foo.mp3');
-    speaker.on('play', () => {
+    var player = new av.Player('foo.mp3');
+    player.on('play', () => {
       test.ok(true);
       test.done();
     });
-    speaker.play();
+    player.play();
   },
 
   timeupdate: function(test) {
     test.expect(0);
     this.clock = this.sandbox.useFakeTimers();
-    var speaker = new av.Player('foo.mp3');
-    speaker.play();
-    speaker.on('timeupdate', test.done);
+    var player = new av.Player('foo.mp3');
+    player.play();
+    player.on('timeupdate', test.done);
     this.clock.tick(101);
   },
 
   ended: function(test) {
     test.expect(0);
     this.clock = this.sandbox.useFakeTimers();
-    var speaker = new av.Player('foo.mp3');
-    speaker.play();
-    speaker.on('ended', test.done);
+    var player = new av.Player('foo.mp3');
+    player.play();
+    player.on('ended', test.done);
     this.spawn.lastCall.returnValue.emit('exit', 0, null);
   },
 
   stop: function(test) {
     test.expect(2);
     this.clock = this.sandbox.useFakeTimers();
-    var speaker = new av.Player('foo.mp3');
-    speaker.play();
-    speaker.on('stop', () => {
+    var player = new av.Player('foo.mp3');
+    player.play();
+    player.on('stop', () => {
       test.equal(this.emitter.kill.callCount, 1);
       test.equal(this.emitter.kill.lastCall.args[0], 'SIGTERM');
       test.done();
     });
-    speaker.stop();
+    player.stop();
   },
 
   stopTwice: function(test) {
     test.expect(2);
     this.clock = this.sandbox.useFakeTimers();
-    var speaker = new av.Player('foo.mp3');
-    speaker.play();
-    speaker.on('stop', () => {
+    var player = new av.Player('foo.mp3');
+    player.play();
+    player.on('stop', () => {
       test.equal(this.emitter.kill.callCount, 1);
       test.equal(this.emitter.kill.lastCall.args[0], 'SIGTERM');
       test.done();
     });
-    speaker.stop();
+    player.stop();
   },
 
   pause: function(test) {
     test.expect(4);
     this.clock = this.sandbox.useFakeTimers();
-    var speaker = new av.Player('foo.mp3');
-    speaker.play();
-    test.equal(speaker.isPlaying, true);
+    var player = new av.Player('foo.mp3');
+    player.play();
+    test.equal(player.isPlaying, true);
 
-    speaker.on('pause', () => {
-      test.equal(speaker.isPlaying, false);
+    player.on('pause', () => {
+      test.equal(player.isPlaying, false);
       test.equal(this.emitter.kill.callCount, 1);
       test.equal(this.emitter.kill.lastCall.args[0], 'SIGTERM');
       test.done();
     });
-    speaker.pause();
+    player.pause();
   },
 
   pauseTwice: function(test) {
     test.expect(3);
     this.clock = this.sandbox.useFakeTimers();
-    var speaker = new av.Player('foo.mp3');
-    speaker.play();
-    speaker.pause();
+    var player = new av.Player('foo.mp3');
+    player.play();
+    player.pause();
 
     test.equal(this.emitter.kill.callCount, 1);
     test.equal(this.emitter.kill.lastCall.args[0], 'SIGTERM');
 
-    speaker.pause();
+    player.pause();
     test.equal(this.emitter.kill.callCount, 1);
+    test.done();
+  },
+
+  playMp3ImpliedStartAtZero: function(test) {
+    test.expect(4);
+    var player = new av.Player();
+    player.play('foo.mp3');
+
+    test.equal(player.isPlaying, true);
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'madplay');
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 0]);
+    test.done();
+  },
+
+  playMp3ExplicitStartAtZero: function(test) {
+    test.expect(4);
+    var player = new av.Player();
+    player.play('foo.mp3', 0);
+
+    test.equal(player.isPlaying, true);
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'madplay');
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 0]);
+    test.done();
+  },
+
+  playMp3ExplicitStartAtZeroString: function(test) {
+    test.expect(4);
+    var player = new av.Player();
+    player.play('foo.mp3', '0');
+
+    test.equal(player.isPlaying, true);
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'madplay');
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 0]);
+    test.done();
+  },
+
+  playMp3ExplicitStartAtOne: function(test) {
+    test.expect(4);
+    var player = new av.Player();
+    player.play('foo.mp3', 1);
+
+    test.equal(player.isPlaying, true);
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'madplay');
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 1]);
+    test.done();
+  },
+
+  playMp3ExplicitStartAtOneString: function(test) {
+    test.expect(4);
+    var player = new av.Player();
+    player.play('foo.mp3', '1');
+
+    test.equal(player.isPlaying, true);
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'madplay');
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 1]);
+    test.done();
+  },
+
+  playMp3ExplicitStartAtTimeCodeTenMinutes: function(test) {
+    test.expect(4);
+    var player = new av.Player();
+    // hh:mm:ss
+    player.play('foo.mp3', '00:10:00');
+
+    test.equal(player.isPlaying, true);
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'madplay');
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 600]);
+    test.done();
+  },
+
+  playMp3ExplicitStartAtTimeCodeTenSeconds: function(test) {
+    test.expect(4);
+    var player = new av.Player();
+    player.play('foo.mp3', '00:00:10');
+
+    test.equal(player.isPlaying, true);
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'madplay');
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 10]);
+    test.done();
+  },
+
+  playMp3ExplicitStartAtTimeCodeSecondsDs: function(test) {
+    test.expect(4);
+    var player = new av.Player();
+    player.play('foo.mp3', '10.250');
+
+    test.equal(player.isPlaying, true);
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'madplay');
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 10.25]);
     test.done();
   },
 
