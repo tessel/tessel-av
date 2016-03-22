@@ -411,5 +411,36 @@ exports['av.Player'] = {
     test.done();
   },
 
+  playFromArray: function(test) {
+    test.expect(4);
+    var player = new av.Player();
+    var args = ['foo.mp3', '-a', 10, '-p', 2];
+
+    player.play(args);
+
+    test.equal(player.isPlaying, true);
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.firstCall.args[0], 'madplay');
+    test.deepEqual(this.spawn.firstCall.args[1], args);
+
+    test.done();
+  },
+
+  playFromObject: function(test) {
+    test.expect(4);
+    var player = new av.Player();
+    var args = {
+      file: 'foo.mp3',
+      '-a': 10,
+      '-r': 2
+    };
+    player.play(args);
+
+    test.equal(player.isPlaying, true);
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'madplay');
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-a', 10, '-r', 2]);
+    test.done();
+  },
   // To Do: more detailed tests for pause time updates
 };

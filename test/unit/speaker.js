@@ -151,13 +151,17 @@ exports['av.Speaker'] = {
   sayFromObject: function(test) {
     test.expect(4);
     var speaker = new av.Speaker();
-    var args = ['foo', '-a', 10, '-p', 50];
+    var args = {
+      phrase: 'foo',
+      '-a': 10,
+      '-r': 2,
+    };
     speaker.say(args);
 
     test.equal(speaker.isSpeaking, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'espeak');
-    test.deepEqual(this.spawn.lastCall.args[1], args);
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo', '-a', 10, '-r', 2, '-s', 130]);
     test.done();
   },
 

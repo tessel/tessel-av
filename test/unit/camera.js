@@ -67,7 +67,7 @@ exports['av.Camera'] = {
     var cam = new av.Camera();
     var writable = new Writable();
 
-    writable._write = function(data) {};
+    writable._write = function() {};
 
     writable.on('pipe', () => {
       test.ok(true);
