@@ -191,6 +191,18 @@ exports['av.Player'] = {
     test.done();
   },
 
+  playMp3ImpliedAll: function(test) {
+    test.expect(4);
+    var player = new av.Player('foo.mp3');
+    player.play();
+
+    test.equal(player.isPlaying, true);
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'madplay');
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 0]);
+    test.done();
+  },
+
   playMp3ImpliedStartAtZero: function(test) {
     test.expect(4);
     var player = new av.Player();
@@ -383,6 +395,19 @@ exports['av.Player'] = {
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'madplay');
     test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 10.25]);
+    test.done();
+  },
+
+  playDifferentMp3: function(test) {
+    test.expect(5);
+    var player = new av.Player('foo.mp3');
+    player.play('bar.mp3');
+
+    test.equal(player.isPlaying, true);
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'madplay');
+    test.deepEqual(this.spawn.lastCall.args[1], ['bar.mp3', '-s', 0]);
+    test.equal(player.file, 'bar.mp3');
     test.done();
   },
 
