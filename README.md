@@ -15,15 +15,13 @@ USB Audio and Video API for Tessel 2.
 npm install tessel-av
 ```
 
-## Examples
 
-
-### av.Camera API 
+## av.Camera
 
 The `Camera` class produces instances that may be used to capture a still frame or stream frames from a capable USB camera. 
 
 
-#### Constructor Parameters
+### av.Camera Initialization
 
 | Property | Type    | Value/Description  | Default  | Required        |
 |----------|---------|--------------------|----------|-----------------|
@@ -44,27 +42,53 @@ The `Camera` class produces instances that may be used to capture a still frame 
 - **`data`** when capture has data.
 - **`ended`** when capture ends.
 
-The following is an example of using both the `data` event and the capture stream to write the same JPEG data to two different files. 
+
+### av.Camera Examples
+
+Use the `data` event to capture a single frame and save it as a JPEG: 
 
 ```js
-var av = require('tessel-av');
 var fs = require('fs');
 var path = require('path');
 
+var av = require('tessel-av');
 var camera = new av.Camera();
 var capture = camera.capture();
 
 capture.on('data', function(data) {
   fs.writeFile(path.join(__dirname, 'captures/captured-via-data-event.jpg'), data);
 });
-
-capture.pipe(fs.createWriteStream(path.join(__dirname, 'captures/captured-via-data-event.jpg')));
 ```
+
+
+Respond to an HTTP request by piping the stream returned by `capture()`: 
+
+```js
+var fs = require("fs");
+var os = require("os");
+var http = require("http");
+var port = 8080;
+
+var av = require("tessel-av");
+var camera = new av.Camera({
+  width: 640,
+  height: 480,
+});
+
+var server = http.createServer((request, response) => {
+  response.writeHead(200, { "Content-Type": "image/jpg" });
+
+  camera.capture().pipe(response);
+
+}).listen(port, () => console.log(`http://${os.hostname()}.local:${port}`));
+
+process.on("SIGINT", _ => server.close());
+```
+
 
 Next, an example of streaming video frames to the browser from an Express + Socket.IO server:
 
 ```js
-var av = require('tessel-av');
 var express = require('express');
 var app = express();
 var server = require('http').Server(app);
@@ -73,6 +97,8 @@ var os = require('os');
 var path = require('path');
 var cp = require('child_process');
 var port = 8080;
+
+var av = require('tessel-av');
 
 server.listen(port, function () {
   console.log(`http://${os.hostname()}.local:${port}`);
@@ -133,14 +159,15 @@ And here's the `public/index.html` file:
 </html>
 ```
 
-### av.Player API 
+
+## av.Player
 
 The `Player` class produces instances that may be used to play audio from an mp3 file stored on the Tessel 2.
 
 (Prior to v0.3.0, the `av.Speaker` class was used for audio file playback, and while that still works in versions >=0.3.0, programs will need to update to use this class before 1.0.0 (estimated release: July 1st, 2016)
 
 
-#### Constructor Parameters
+### av.Player Initialization
 
 The `Player` class constructor accepts one argument, which is optional, that specifies an mp3 file to play when the `play()` method is called. The may be omitted and supplied directly to `play(file [, time])` at a later time in the object's lifecycle.
 
@@ -159,7 +186,7 @@ The `Player` class constructor accepts one argument, which is optional, that spe
 - **`pause()`** Pause playback of the current file. 
 - **`stop()`** Stop playback of the current file (calling `play()` will start the playback from the beginning.)
 
-Allowed Time String Formats:
+#### Allowed Time String Formats
 
 | Format | Type |
 | ------ | ---- |
@@ -259,7 +286,7 @@ sound.on('ended', function() {
 > 
 
 
-### av.Speaker API 
+## av.Speaker 
 
 (Prior to v0.3.0, the `av.Speaker` class was used for audio file playback, and while that still works in versions >=0.3.0, programs will need to update to use this class before 1.0.0 (estimated release: July 1st, 2016)
 
@@ -276,7 +303,7 @@ sound.on('ended', function() {
 - **`stop()`** Stop playback.
 
 
-#### Options
+### av.Speaker Initialization
 
 Options may be _most_ of the [options supported by `espeak`](espeak.md). For example, if I wanted to set the amplitude and pitch: 
 
@@ -324,7 +351,8 @@ var alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
 var speaker = new av.Speaker();
 
 speaker.say(`
-  Hello, this is ${os.hostname()}. I'm going to say my A-B-C's now
+  Hello, this is ${os.hostname()}. 
+  I'm going to say my A-B-C's now
 `);
 
 speaker.on('ended', function() {
@@ -344,7 +372,8 @@ var alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
 var speaker = new av.Speaker();
 
 speaker.say(`
-  Hello, this is ${os.hostname()}. I'm going to say my A-B-C's now
+  Hello, this is ${os.hostname()}. 
+  I'm going to say my A-B-C's now
 `);
 
 alphabet.forEach(letter => speaker.say(letter));
