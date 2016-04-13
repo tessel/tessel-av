@@ -21,6 +21,7 @@ global.sinon = require('sinon');
 global.av = require('../../lib/index');
 global.CaptureStream = require('../../lib/capture-stream');
 global.Camera = require('../../lib/camera');
+global.Microphone = require('../../lib/microphone');
 global.Player = require('../../lib/player');
 global.Speaker = require('../../lib/speaker');
 

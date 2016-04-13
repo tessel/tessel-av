@@ -51,6 +51,7 @@ exports['av.Camera'] = {
     });
 
     capture.on('end', function() {
+      cam.stop();
       test.done();
     });
 
@@ -69,6 +70,7 @@ exports['av.Camera'] = {
 
     writable.on('pipe', () => {
       test.ok(true);
+      cam.stop();
       test.done();
     });
 

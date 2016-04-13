@@ -28,10 +28,11 @@
     "Writable": true,
     "bindings": true,
     "sinon": true,
-    "MemoryStream": true,
+    "CaptureStream": true,
     "av": true,
     "Camera": true,
     "Player": true,
-    "Speaker": true
+    "Speaker": true,
+    "Microphone": true
   }
 }
