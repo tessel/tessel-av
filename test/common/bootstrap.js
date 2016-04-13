@@ -1,6 +1,6 @@
 global.IS_TEST_ENV = true;
 
-// System Objects
+// Dependencies: Built-in
 global.cp = require('child_process');
 global.events = require('events');
 global.fs = require('fs');
@@ -13,12 +13,13 @@ global.Readable = stream.Readable;
 global.Writable = stream.Writable;
 
 
-// Third Party
+// Dependencies: Third Party
 global.sinon = require('sinon');
 
 
-// Module
+// Dependencies: Internal
 global.av = require('../../lib/index');
+global.CaptureStream = require('../../lib/capture-stream');
 global.Camera = require('../../lib/camera');
 global.Player = require('../../lib/player');
 global.Speaker = require('../../lib/speaker');

@@ -1,5 +1,3 @@
-var CaptureStream = Camera.CaptureStream;
-
 exports['av.Camera'] = {
   setUp: function(done) {
     this.sandbox = sinon.sandbox.create();
