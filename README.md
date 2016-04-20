@@ -2,7 +2,10 @@
 
 [![Travis Build Status](https://travis-ci.org/tessel/tessel-av.svg?branch=master)](https://travis-ci.org/tessel/tessel-av) 
 
-USB Audio and Video API for Tessel 2.
+USB Camera, Microphone and Speaker API for Tessel 2
+
+
+#### This module does not and will not support the Tessel 1 Camera Module
 
 
 - Camera, for still shots (video coming soon)
