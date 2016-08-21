@@ -28,8 +28,8 @@ The `Camera` class produces instances that may be used to capture a still frame 
 
 | Property | Type    | Value/Description  | Default  | Required        |
 |----------|---------|--------------------|----------|-----------------|
-| width    | number  | Set the width of the captured or streamed frames. | 320 | no |
-| height   | number  | Set the height of the captured or streamed frames. | 240 | no |
+| width    | number  | Set the width of the captured or streamed frames, max 320. | 320 | no |
+| height   | number  | Set the height of the captured or streamed frames, max 240. | 240 | no |
 | path     | string  | The system path to the video device | `/dev/video0` | no |  
 | quality  | number  | Set the quality from 0...1 | 1 | no |  
 | output   | string  | Name of an output file to direct still frame capture data. By default, no captures are written to disc. Setting `output` results in `pipe: false` | `/tmp/capture.jpg` | no |  
@@ -121,7 +121,7 @@ io.on('connection', (socket) => {
 process.on("SIGINT", _ => server.close());
 ```
 
-And here's the `public/index.html` file: 
+And here's the `public/index.html` file, which should be referenced in a [`.tesselinclude` file](https://tessel.gitbooks.io/t2-docs/content/API/CLI.html)): 
 
 ```html
 <!doctype html>
@@ -276,7 +276,7 @@ sound.on('ended', function() {
 ```
 
 
-> Remember that you **must** explicitly specify static assets by listing them in a `.tesselinclude` file. For example, to ensure the `song.mp3` file is deployed to your Tessel 2, you'll create a file called `.tesselinclude` that contains the following:
+> Remember that you **must** explicitly specify static assets by listing them in a [`.tesselinclude` file](https://tessel.gitbooks.io/t2-docs/content/API/CLI.html) file. For example, to ensure the `song.mp3` file is deployed to your Tessel 2, you'll create a file called `.tesselinclude` that contains the following:
 > ```
 > song.mp3
 > ```
