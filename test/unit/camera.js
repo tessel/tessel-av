@@ -33,7 +33,7 @@ exports['av.Camera'] = {
   },
 
   captureToEmitter: function(test) {
-    test.expect(5);
+    test.expect(3);
 
     var buffer = new Buffer([0]);
     var cam = new av.Camera();
@@ -45,18 +45,7 @@ exports['av.Camera'] = {
     test.equal(capture instanceof CaptureStream, true);
     test.equal(capture instanceof Readable, true);
 
-    capture.on('data', function(data) {
-      test.equal(buffer.equals(data), true);
-      test.ok(true);
-    });
-
-    capture.on('end', function() {
-      cam.stop();
-      test.done();
-    });
-
-    this.emitter.stdout.emit('data', buffer);
-    this.emitter.emit('close');
+    test.done();
   },
 
   captureToPipe: function(test) {
@@ -80,7 +69,7 @@ exports['av.Camera'] = {
     this.emitter.emit('close');
   },
 
-  captureSpawnToPipe: function(test) {
+  spawned: function(test) {
     test.expect(3);
 
     var cam = new av.Camera();
@@ -88,214 +77,28 @@ exports['av.Camera'] = {
     cam.capture();
 
     test.equal(this.spawn.callCount, 1);
-    test.equal(this.spawn.lastCall.args[0], 'ffmpeg');
+    test.equal(this.spawn.lastCall.args[0], 'mjpg_streamer');
     test.deepEqual(this.spawn.lastCall.args[1], [
-      '-y',
-      '-v',
-      'fatal',
-      '-f',
-      'v4l2',
-      '-r',
-      15,
-      '-s',
-      '320x240',
       '-i',
-      '/dev/video0',
-      '-s',
-      '320x240',
-      '-q:v',
-      1,
-      '-f',
-      'MJPEG',
-      '-vframes',
-      1,
-      'pipe:1'
-    ]);
-
-    test.done();
-  },
-
-  captureToFilePipeFalse: function(test) {
-    test.expect(3);
-
-    var cam = new av.Camera({
-      // default to /tmp/capture.jpg
-      pipe: false
-    });
-
-    cam.capture();
-
-    test.equal(this.spawn.callCount, 1);
-    test.equal(this.spawn.lastCall.args[0], 'ffmpeg');
-    test.deepEqual(this.spawn.lastCall.args[1], [
-      '-y',
-      '-v',
-      'fatal',
-      '-f',
-      'v4l2',
-      '-r',
-      15,
-      '-s',
-      '320x240',
-      '-i',
-      '/dev/video0',
-      '-s',
-      '320x240',
-      '-q:v',
-      1,
-      '-f',
-      'MJPEG',
-      '-vframes',
-      1,
-      '/tmp/capture.jpg'
-    ]);
-
-    test.done();
-  },
-
-  captureToFileOutputFile: function(test) {
-    test.expect(3);
-
-    var cam = new av.Camera({
-      output: 'foo.jpg'
-    });
-
-    cam.capture();
-
-    test.equal(this.spawn.callCount, 1);
-    test.equal(this.spawn.lastCall.args[0], 'ffmpeg');
-    test.deepEqual(this.spawn.lastCall.args[1], [
-      '-y',
-      '-v',
-      'fatal',
-      '-f',
-      'v4l2',
-      '-r',
-      15,
-      '-s',
-      '320x240',
-      '-i',
-      '/dev/video0',
-      '-s',
-      '320x240',
-      '-q:v',
-      1,
-      '-f',
-      'MJPEG',
-      '-vframes',
-      1,
-      'foo.jpg'
-    ]);
-
-    test.done();
-  },
-
-  captureToFileOutputFileCaptureCall: function(test) {
-    test.expect(3);
-
-    var cam = new av.Camera();
-
-    cam.capture({
-      output: 'foo.jpg'
-    });
-
-    test.equal(this.spawn.callCount, 1);
-    test.equal(this.spawn.lastCall.args[0], 'ffmpeg');
-    test.deepEqual(this.spawn.lastCall.args[1], [
-      '-y',
-      '-v',
-      'fatal',
-      '-f',
-      'v4l2',
-      '-r',
-      15,
-      '-s',
-      '320x240',
-      '-i',
-      '/dev/video0',
-      '-s',
-      '320x240',
-      '-q:v',
-      1,
-      '-f',
-      'MJPEG',
-      '-vframes',
-      1,
-      'foo.jpg'
+      '/usr/lib/input_uvc.so -n -q 100 -r 800x600 -f 30 -d /dev/video0 ',
+      '-o',
+      '/usr/lib/output_http.so -p 8080'
     ]);
 
     test.done();
   },
 
   stream: function(test) {
-    test.expect(4);
+    test.expect(1);
 
     var cam = new av.Camera();
 
-    var capture = this.sandbox.spy(cam, 'capture');
-
-    var s = cam.stream();
-
-
-    test.equal(capture.callCount, 1);
-    test.deepEqual(capture.lastCall.args[0], {
-      stream: true,
-      pipe: true
+    cam.on('data', () => {
+      test.ok(true);
+      test.done();
     });
+    cam.write(new Buffer(['a', 'b', 'c']));
 
-    test.equal(s instanceof CaptureStream, true);
-    test.equal(s instanceof Readable, true);
-
-    test.done();
   },
 
-  streamUnaffectedByOutputFile: function(test) {
-    test.expect(7);
-
-    var cam = new av.Camera({
-      output: 'foo.jpg'
-    });
-
-    var capture = this.sandbox.spy(cam, 'capture');
-
-    var s = cam.stream();
-
-
-    test.equal(capture.callCount, 1);
-    test.deepEqual(capture.lastCall.args[0], {
-      stream: true,
-      pipe: true
-    });
-
-    test.equal(s instanceof CaptureStream, true);
-    test.equal(s instanceof Readable, true);
-    test.equal(this.spawn.callCount, 1);
-    test.equal(this.spawn.lastCall.args[0], 'ffmpeg');
-    test.deepEqual(this.spawn.lastCall.args[1], [
-      '-y',
-      '-v',
-      'fatal',
-      '-f',
-      'v4l2',
-      '-r',
-      15,
-      '-s',
-      '320x240',
-      '-i',
-      '/dev/video0',
-      '-s',
-      '320x240',
-      '-q:v',
-      3,
-      '-f',
-      'MJPEG',
-      '-b:v',
-      '64k',
-      '-r',
-      15,
-      'pipe:1',
-    ]);
-
-    test.done();
-  }
 };

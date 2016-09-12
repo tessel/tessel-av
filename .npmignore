@@ -11,3 +11,6 @@ build/
 test/
 wip/
 *.mp3
+.tessel*
+server.js
+public/

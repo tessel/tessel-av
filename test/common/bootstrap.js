@@ -15,6 +15,7 @@ global.Writable = stream.Writable;
 
 // Dependencies: Third Party
 global.sinon = require('sinon');
+global.MjpegConsumer = require('mjpeg-consumer');
 
 
 // Dependencies: Internal
