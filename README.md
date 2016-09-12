@@ -30,20 +30,21 @@ The `Camera` class produces instances that may be used to capture a still frame 
 |----------|---------|--------------------|----------|-----------------|
 | width    | number  | Set the width of the captured or streamed frames, max 320. | 320 | no |
 | height   | number  | Set the height of the captured or streamed frames, max 240. | 240 | no |
-| path     | string  | The system path to the video device | `/dev/video0` | no |  
+| device     | string  | The system path to the video device | `/dev/video0` | no |  
 | quality  | number  | Set the quality from 0...1 | 1 | no |  
-| output   | string  | Name of an output file to direct still frame capture data. By default, no captures are written to disc. Setting `output` results in `pipe: false` | `/tmp/capture.jpg` | no |  
+| fps  | number  | Frames per second. Will be ignored if value is unsupported. | Per camera | no |  
 
 
 
-- **`capture`** Take a still frame. Returns a `CaptureStream` of jpeg encoded data. 
-- **`stream`** Capture a stream of frames. Returns a `CaptureStream` of jpeg encoded frame data. 
+
+- **`capture`** Take a still frame. Returns a `CaptureStream`, call `pipe` with a destination to send a frame of jpeg encoded data. 
+- **`stream`** Stream mjpg frames from camera. 
 
 
 ### av.Camera Events
 
-- **`data`** when capture has data.
-- **`ended`** when capture ends.
+- **`data`** when stream has data.
+- **`frame`** when camera has a complete frame.
 
 
 ### av.Camera Examples
@@ -89,36 +90,27 @@ process.on("SIGINT", _ => server.close());
 ```
 
 
-Next, an example of streaming video frames to the browser from an Express + Socket.IO server:
+A very simple example of direct-to-browser streaming:
 
 ```js
 var express = require('express');
 var app = express();
 var server = require('http').Server(app);
-var io = require('socket.io')(server);
 var os = require('os');
 var path = require('path');
-var cp = require('child_process');
-var port = 8080;
+var port = 8888;
 
-var av = require('tessel-av');
+var av = require('./');
+var camera = new av.Camera();
 
 server.listen(port, function () {
   console.log(`http://${os.hostname()}.local:${port}`);
 });
 
 app.use(express.static(path.join(__dirname, '/public')));
-
-io.on('connection', (socket) => {
-  var camera = new av.Camera();
-
-  socket.on('ready', () => camera.stream());
-  camera.on('data', (data) => {
-    socket.emit('image', data.toString('base64'));
-  });
+app.get('/stream', (request, response) => {
+  response.redirect(camera.url);
 });
-
-process.on("SIGINT", _ => server.close());
 ```
 
 And here's the `public/index.html` file, which should be referenced in a [`.tesselinclude` file](https://tessel.gitbooks.io/t2-docs/content/API/CLI.html)): 
@@ -128,36 +120,10 @@ And here's the `public/index.html` file, which should be referenced in a [`.tess
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>stream</title>
-    <script src="/socket.io/socket.io.js"></script>
+    <title>streaming video to img element</title>
   </head>
   <body>
-    <canvas id="output" width="320" height="240" style="border:solid;"></canvas>
-    <script>
-    window.onload = function() {
-      var context = document.getElementById("output").getContext("2d");
-      var socket = io();
-      var frame = null;
-
-      socket.on("image", (encoded) => {
-        frame = "data:image/jpeg;base64," + encoded;
-      });
-
-      socket.emit("ready");
-
-      setInterval(() => {
-        if (frame) {
-          var image = new Image();
-          image.src = frame;
-          try {
-            context.drawImage(image, 0, 0);
-          } catch (e) {
-            // ... suppress InvalidStateError
-          }
-        }
-      }, 1000 / 24);
-    };
-  </script>    
+    <img src="/stream">
   </body>
 </html>
 ```

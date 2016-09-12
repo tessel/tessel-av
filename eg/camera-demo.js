@@ -14,8 +14,6 @@ const camera = new av.Camera({
   height: 600,
 });
 
-// camera.stream();
-
 const server = http.createServer((request, response) => {
 
   if (/frame/.test(request.url)) {
