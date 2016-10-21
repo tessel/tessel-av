@@ -30,12 +30,9 @@
     "mkdirp": "^0.5.1",
     "sinon": "^1.14.1"
   },
-  "tessel": {
-    "skipBinary": true
-  },
   "dependencies": {
     "got": "^6.3.0",
     "ip": "^1.1.3",
-    "mjpeg-consumer": "^1.1.0"
+    "tessel-mjpeg-consumer": "^1.1.0"
   }
 }
