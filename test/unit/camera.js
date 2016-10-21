@@ -1,5 +1,5 @@
 exports['av.Camera'] = {
-  setUp: function(done) {
+  setUp(done) {
     this.sandbox = sinon.sandbox.create();
     this.emitter = new Emitter();
     this.spawn = this.sandbox.stub(cp, 'spawn', () => {
@@ -15,31 +15,33 @@ exports['av.Camera'] = {
     done();
   },
 
-  tearDown: function(done) {
+  tearDown(done) {
     this.sandbox.restore();
     done();
   },
 
-  basic: function(test) {
+  basic(test) {
     test.expect(1);
     test.equal(typeof av.Camera, 'function');
     test.done();
   },
 
-  emitter: function(test) {
+  emitter(test) {
     test.expect(1);
     test.equal((new av.Camera()) instanceof Emitter, true);
     test.done();
   },
 
-  captureToEmitter: function(test) {
-    test.expect(3);
+  capture(test) {
+    test.expect(1);
+    test.equal(typeof av.Camera.prototype.capture, 'function');
+    test.done();
+  },
 
-    var buffer = new Buffer([0]);
+  captureReadable(test) {
+    test.expect(2);
+
     var cam = new av.Camera();
-
-    test.equal(typeof cam.capture, 'function');
-
     var capture = cam.capture();
 
     test.equal(capture instanceof CaptureStream, true);
@@ -48,7 +50,7 @@ exports['av.Camera'] = {
     test.done();
   },
 
-  captureToPipe: function(test) {
+  captureToPipe(test) {
     test.expect(1);
 
     var buffer = new Buffer([0]);
@@ -69,7 +71,7 @@ exports['av.Camera'] = {
     this.emitter.emit('close');
   },
 
-  spawned: function(test) {
+  spawned(test) {
     test.expect(3);
 
     var cam = new av.Camera();
@@ -88,7 +90,7 @@ exports['av.Camera'] = {
     test.done();
   },
 
-  stream: function(test) {
+  stream(test) {
     test.expect(1);
 
     var cam = new av.Camera();
