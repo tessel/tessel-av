@@ -8,7 +8,7 @@ USB Camera, Microphone and Speaker API for Tessel 2
 #### This module does not and will not support the Tessel 1 Camera Module
 
 
-- Camera, for still shots (video coming soon)
+- Camera, for capturing video streams and still shots
 - Microphone, for sound recording (coming soon)
 - Player, for sound playback 
 - Speaker, for text-to-speech playback
