@@ -28,12 +28,15 @@ The `Camera` class produces instances that may be used to capture a still frame 
 
 | Property | Type    | Value/Description  | Default  | Required        |
 |----------|---------|--------------------|----------|-----------------|
-| width    | number  | Set the width of the captured or streamed frames, max 320. | 320 | no |
-| height   | number  | Set the height of the captured or streamed frames, max 240. | 240 | no |
 | device     | string  | The system path to the video device | `/dev/video0` | no |  
+| dimensions | string  | Valid "WxH" dimensions. Is limited to dimensions supported by the device.\* | `"800x600"` | no |
+| fps  | number  | Frames per second. Will be ignored if value is unsupported. | Per camera | no |  
+| port  | number  | Port number for the video server | 8080 | no |  
 | quality  | number  | Set the quality from 0...1 | 1 | no |  
 | fps  | number  | Frames per second. Will be ignored if value is unsupported. | Per camera | no |  
 
+
+\* The device itself determines what dimensions are supported. Since the output comes directly from the camera hardware, invalid dimensions will be overridden by device if not supported.
 
 
 
