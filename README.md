@@ -103,7 +103,7 @@ var os = require('os');
 var path = require('path');
 var port = 8888;
 
-var av = require('./');
+var av = require("tessel-av");
 var camera = new av.Camera();
 
 server.listen(port, function () {
