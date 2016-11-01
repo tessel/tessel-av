@@ -71,12 +71,12 @@ capture.on('data', function(data) {
 Respond to an HTTP request by piping the stream returned by `capture()`: 
 
 ```js
-var fs = require("fs");
-var os = require("os");
-var http = require("http");
+var fs = require('fs');
+var os = require('os');
+var http = require('http');
 var port = 8080;
 
-var av = require("tessel-av");
+var av = require('tessel-av');
 var camera = new av.Camera({
   width: 320,
   height: 240,
@@ -103,7 +103,7 @@ var os = require('os');
 var path = require('path');
 var port = 8888;
 
-var av = require('./');
+var av = require('tessel-av');
 var camera = new av.Camera();
 
 server.listen(port, function () {
