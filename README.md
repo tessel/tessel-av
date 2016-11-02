@@ -2,14 +2,14 @@
 [![Code of Conduct](https://img.shields.io/badge/%E2%9D%A4-code%20of%20conduct-blue.svg?style=flat)](https://github.com/tessel/project/blob/master/CONDUCT.md)
 [![Travis Build Status](https://travis-ci.org/tessel/tessel-av.svg?branch=master)](https://travis-ci.org/tessel/tessel-av) 
 
-USB Camera, Microphone and Speaker API for Tessel 2
+USB Camera, Microphone, Player and Speaker API for Tessel 2
 
 
 #### This module does not and will not support the Tessel 1 Camera Module
 
 
 - Camera, for capturing video streams and still shots
-- Microphone, for sound recording (coming soon)
+- Microphone, for sound streaming
 - Player, for sound playback 
 - Speaker, for text-to-speech playback
 
