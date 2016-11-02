@@ -1,8 +1,8 @@
 // System Objects
-var cp = require("child_process");
+var cp = require('child_process');
 
 // Third Party Dependencies
-var tags = require("common-tags");
+var tags = require('common-tags');
 
 
 module.exports = function(grunt) {
@@ -139,4 +139,3 @@ function changelog(rows) {
 ${rows}
 `;
 }
-
