@@ -83,7 +83,7 @@ exports['av.Microphone'] = {
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'arecord');
     test.deepEqual(this.spawn.lastCall.args[1], [
-      '-f', 'cd', '-c', '1', '-r', '48000'
+      '-f', 'cd', '-r', '48000', '-c', 1
     ]);
 
     test.done();
