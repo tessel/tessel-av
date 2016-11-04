@@ -73,7 +73,7 @@ exports['av.Microphone'] = {
     this.emitter.emit('close');
   },
 
-  listenSpawnToPipe: function(test) {
+  listenSpawnToPipeDefault: function(test) {
     test.expect(3);
 
     var mic = new av.Microphone();
@@ -83,9 +83,22 @@ exports['av.Microphone'] = {
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'arecord');
     test.deepEqual(this.spawn.lastCall.args[1], [
-      '-f', 'cd', '-r', '48000', '-c', 1
+      '-f', 'cd', '-r', '48000'
     ]);
 
+    test.done();
+  },
+
+  listenSpawnToPipeWithArgs: function(test) {
+    test.expect(3);
+
+    var mic = new av.Microphone();
+
+    mic.listen(['foo', 'bar']);
+
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'arecord');
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo', 'bar']);
     test.done();
   },
 
