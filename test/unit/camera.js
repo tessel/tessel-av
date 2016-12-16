@@ -1,3 +1,5 @@
+'use strict';
+
 exports['av.Camera'] = {
   setUp(done) {
     this.sandbox = sinon.sandbox.create();
@@ -51,24 +53,31 @@ exports['av.Camera'] = {
   },
 
   captureToPipe(test) {
-    test.expect(1);
+    test.expect(5);
 
     var buffer = new Buffer([0]);
     var cam = new av.Camera();
     var writable = new Writable();
 
-    writable._write = function() {};
-
     writable.on('pipe', () => {
       test.ok(true);
-      cam.stop();
+    });
+
+    cam.capture().pipe(writable).on('finish', () => {
+      test.ok(true);
+    });
+
+    cam.on('stop', () => {
+      test.equal(this.write.lastCall.args[0], buffer);
+      test.equal(this.write.callCount, 1);
+      // This is null because we bypassed the frame setting
+      // mechanism below when `cam.emit('data', buffer);`
+      // is called. That's _not_ true of actual behavior.
+      test.equal(cam.frame, null);
       test.done();
     });
 
-    cam.capture().pipe(writable);
-
-    this.emitter.stdout.emit('data', buffer);
-    this.emitter.emit('close');
+    cam.emit('data', buffer);
   },
 
   spawned(test) {
