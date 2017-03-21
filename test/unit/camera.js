@@ -68,7 +68,7 @@ exports['av.Camera'] = {
     });
 
     cam.on('stop', () => {
-      test.equal(this.write.lastCall.args[0], buffer);
+      test.ok(this.write.lastCall.args[0].equals(buffer));
       test.equal(this.write.callCount, 1);
       // This is null because we bypassed the frame setting
       // mechanism below when `cam.emit('data', buffer);`
@@ -77,6 +77,37 @@ exports['av.Camera'] = {
       test.done();
     });
 
+    cam.emit('data', buffer);
+  },
+
+  captureMultiple(test) {
+    test.expect(8);
+
+    var buffer = new Buffer([0]);
+    var cam = new av.Camera();
+    var writable = new Writable();
+
+    this.sandbox.spy(cam, 'capture');
+    this.sandbox.spy(cam, 'stream');
+
+    cam.on('stop', () => {
+      test.ok(buffer.equals(buffer));
+      buffer.writeInt8(cam.capture.callCount, 0);
+
+      if (cam.capture.callCount === 4) {
+        test.equal(cam.stream.callCount, 4);
+        test.done();
+      } else {
+        let cs = cam.capture();
+        cam.emit('data', buffer);
+
+        test.equal(cs.read(1).readUInt8(0), cam.capture.callCount - 1);
+
+        cs.pipe(writable);
+      }
+    });
+
+    cam.capture().pipe(writable);
     cam.emit('data', buffer);
   },
 
