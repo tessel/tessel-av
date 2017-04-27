@@ -29,3 +29,12 @@ global.Speaker = require('../../lib/speaker');
 // Binaries
 // global.isDarwin = process.platform === 'darwin';
 // global.binding = global.isDarwin && require('bindings')('capture.node');
+
+
+global.aplayListDevices = [
+  '**** List of PLAYBACK Hardware Devices ****',
+  'card 1: Device [USB Audio Device], device 0: USB Audio [USB Audio]',
+  '  Subdevices: 1/1',
+  '  Subdevice #0: subdevice #0',
+  ''
+].join('\n');

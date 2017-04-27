@@ -33,6 +33,7 @@
     "Camera": true,
     "Player": true,
     "Speaker": true,
-    "Microphone": true
+    "Microphone": true,
+    "aplayListDevices": true
   }
 }
