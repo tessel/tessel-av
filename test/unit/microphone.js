@@ -1,5 +1,7 @@
+require('../common/bootstrap');
+
 exports['av.Microphone'] = {
-  setUp: function(done) {
+  setUp(done) {
     this.sandbox = sinon.sandbox.create();
     this.emitter = new Emitter();
     this.spawn = this.sandbox.stub(cp, 'spawn', () => {
@@ -15,37 +17,37 @@ exports['av.Microphone'] = {
     done();
   },
 
-  tearDown: function(done) {
+  tearDown(done) {
     this.sandbox.restore();
     done();
   },
 
-  basic: function(test) {
+  basic(test) {
     test.expect(1);
     test.equal(typeof av.Microphone, 'function');
     test.done();
   },
 
-  emitter: function(test) {
+  emitter(test) {
     test.expect(1);
     test.equal((new av.Microphone()) instanceof Emitter, true);
     test.done();
   },
 
-  listenToEmitter: function(test) {
+  listenToEmitter(test) {
     test.expect(5);
 
-    var buffer = new Buffer([0]);
-    var mic = new av.Microphone();
+    const buffer = new Buffer([0]);
+    const mic = new av.Microphone();
 
     test.equal(typeof mic.listen, 'function');
 
-    var listen = mic.listen();
+    const listen = mic.listen();
 
     test.equal(listen instanceof CaptureStream, true);
     test.equal(listen instanceof Readable, true);
 
-    listen.on('data', function(data) {
+    listen.on('data', data => {
       test.equal(buffer.equals(data), true);
       test.ok(true);
       test.done();
@@ -53,14 +55,14 @@ exports['av.Microphone'] = {
     this.emitter.stdout.emit('data', buffer);
   },
 
-  listenToPipe: function(test) {
+  listenToPipe(test) {
     test.expect(1);
 
-    var buffer = new Buffer([0]);
-    var mic = new av.Microphone();
-    var writable = new Writable();
+    const buffer = new Buffer([0]);
+    const mic = new av.Microphone();
+    const writable = new Writable();
 
-    writable._write = function() {};
+    writable._write = () => {};
 
     writable.on('pipe', () => {
       test.ok(true);
@@ -73,10 +75,10 @@ exports['av.Microphone'] = {
     this.emitter.emit('close');
   },
 
-  listenSpawnToPipeDefault: function(test) {
+  listenSpawnToPipeDefault(test) {
     test.expect(3);
 
-    var mic = new av.Microphone();
+    const mic = new av.Microphone();
 
     mic.listen();
 
@@ -89,10 +91,10 @@ exports['av.Microphone'] = {
     test.done();
   },
 
-  listenSpawnToPipeWithArgs: function(test) {
+  listenSpawnToPipeWithArgs(test) {
     test.expect(3);
 
-    var mic = new av.Microphone();
+    const mic = new av.Microphone();
 
     mic.listen(['foo', 'bar']);
 

@@ -1,5 +1,7 @@
 'use strict';
 
+require('../common/bootstrap');
+
 exports['av.Camera'] = {
   setUp(done) {
     this.sandbox = sinon.sandbox.create();

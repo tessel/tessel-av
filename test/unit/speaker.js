@@ -1,5 +1,7 @@
+require('../common/bootstrap');
+
 exports['av.Speaker'] = {
-  setUp: function(done) {
+  setUp(done) {
     this.sandbox = sinon.sandbox.create();
     this.emitter = new Emitter();
     this.spawn = this.sandbox.stub(cp, 'spawn', () => {
@@ -8,42 +10,44 @@ exports['av.Speaker'] = {
       this.emitter.stderr = new Emitter();
       return this.emitter;
     });
+    this.execSync = this.sandbox.stub(cp, 'execSync', () => new Buffer(aplayListDevices));
+
     done();
   },
 
-  tearDown: function(done) {
+  tearDown(done) {
     this.sandbox.restore();
     done();
   },
 
-  basic: function(test) {
+  basic(test) {
     test.expect(1);
     test.equal(typeof av.Speaker, 'function');
     test.done();
   },
 
-  fileArgGetsAPlayerInstance: function(test) {
+  fileArgGetsAPlayerInstance(test) {
     test.expect(1);
     test.equal((new av.Speaker('foo.mp3')) instanceof Player, true);
     test.done();
   },
 
-  emitter: function(test) {
+  emitter(test) {
     test.expect(1);
     test.equal((new av.Speaker()) instanceof Emitter, true);
     test.done();
   },
 
-  currentTime: function(test) {
+  currentTime(test) {
     test.expect(1);
-    var speaker = new av.Speaker();
+    const speaker = new av.Speaker();
     test.equal(speaker.currentTime, 0);
     test.done();
   },
 
-  sayNothing: function(test) {
+  sayNothing(test) {
     test.expect(2);
-    var speaker = new av.Speaker();
+    const speaker = new av.Speaker();
     speaker.say();
 
     test.equal(speaker.isSpeaking, false);
@@ -51,9 +55,9 @@ exports['av.Speaker'] = {
     test.done();
   },
 
-  sayNull: function(test) {
+  sayNull(test) {
     test.expect(2);
-    var speaker = new av.Speaker();
+    const speaker = new av.Speaker();
     speaker.say(null);
 
     test.equal(speaker.isSpeaking, false);
@@ -61,9 +65,9 @@ exports['av.Speaker'] = {
     test.done();
   },
 
-  sayUndefined: function(test) {
+  sayUndefined(test) {
     test.expect(2);
-    var speaker = new av.Speaker();
+    const speaker = new av.Speaker();
     speaker.say(undefined);
 
     test.equal(speaker.isSpeaking, false);
@@ -71,9 +75,9 @@ exports['av.Speaker'] = {
     test.done();
   },
 
-  sayEmpty: function(test) {
+  sayEmpty(test) {
     test.expect(2);
-    var speaker = new av.Speaker();
+    const speaker = new av.Speaker();
     speaker.say('');
 
     test.equal(speaker.isSpeaking, false);
@@ -81,9 +85,9 @@ exports['av.Speaker'] = {
     test.done();
   },
 
-  sayZero: function(test) {
+  sayZero(test) {
     test.expect(4);
-    var speaker = new av.Speaker();
+    const speaker = new av.Speaker();
     speaker.say(0);
 
     test.equal(speaker.isSpeaking, true);
@@ -93,9 +97,9 @@ exports['av.Speaker'] = {
     test.done();
   },
 
-  sayString: function(test) {
+  sayString(test) {
     test.expect(4);
-    var speaker = new av.Speaker();
+    const speaker = new av.Speaker();
     speaker.say('hello');
 
     test.equal(speaker.isSpeaking, true);
@@ -105,10 +109,10 @@ exports['av.Speaker'] = {
     test.done();
   },
 
-  sayManyWords: function(test) {
+  sayManyWords(test) {
     test.expect(4);
-    var speaker = new av.Speaker();
-    var message = `Hello Dave, you're looking well today`;
+    const speaker = new av.Speaker();
+    const message = `Hello Dave, you're looking well today`;
     speaker.say(message);
 
     test.equal(speaker.isSpeaking, true);
@@ -118,10 +122,10 @@ exports['av.Speaker'] = {
     test.done();
   },
 
-  sayFromArrayA: function(test) {
+  sayFromArrayA(test) {
     test.expect(4);
-    var speaker = new av.Speaker();
-    var a = ['foo', '-a', 10, '-p', 50];
+    const speaker = new av.Speaker();
+    const a = ['foo', '-a', 10, '-p', 50];
 
     speaker.say(a);
 
@@ -133,10 +137,10 @@ exports['av.Speaker'] = {
     test.done();
   },
 
-  sayFromArrayB: function(test) {
+  sayFromArrayB(test) {
     test.expect(4);
-    var speaker = new av.Speaker();
-    var b = ['-a', 10, '-p', 50, 'foo'];
+    const speaker = new av.Speaker();
+    const b = ['-a', 10, '-p', 50, 'foo'];
 
     speaker.say(b);
 
@@ -148,10 +152,10 @@ exports['av.Speaker'] = {
     test.done();
   },
 
-  sayFromObject: function(test) {
+  sayFromObject(test) {
     test.expect(4);
-    var speaker = new av.Speaker();
-    var args = {
+    const speaker = new av.Speaker();
+    const args = {
       phrase: 'foo',
       '-a': 10,
       '-r': 2,
@@ -165,12 +169,12 @@ exports['av.Speaker'] = {
     test.done();
   },
 
-  sayQueues: function(test) {
+  sayQueues(test) {
     test.expect(1);
 
-    var speaker = new av.Speaker();
-    var a = ['foo', '-a', 10, '-p', 50];
-    var b = ['-a', 10, '-p', 50, 'foo'];
+    const speaker = new av.Speaker();
+    const a = ['foo', '-a', 10, '-p', 50];
+    const b = ['-a', 10, '-p', 50, 'foo'];
 
     speaker.say(a);
     speaker.say(b);
@@ -184,15 +188,15 @@ exports['av.Speaker'] = {
     test.done();
   },
 
-  emptyQueueEmitsEmpty: function(test) {
+  emptyQueueEmitsEmpty(test) {
     test.expect(2);
-    var ended = this.sandbox.spy();
-    var empty = this.sandbox.spy();
+    const ended = this.sandbox.spy();
+    const empty = this.sandbox.spy();
 
-    var speaker = new av.Speaker();
-    var a = ['foo', '-a', 10, '-p', 50];
-    var b = ['-a', 10, '-p', 50, 'foo'];
-    var c = ['-p', 50, '-a', 10, 'foo'];
+    const speaker = new av.Speaker();
+    const a = ['foo', '-a', 10, '-p', 50];
+    const b = ['-a', 10, '-p', 50, 'foo'];
+    const c = ['-p', 50, '-a', 10, 'foo'];
 
     speaker.say(a);
     speaker.say(b);
@@ -212,9 +216,9 @@ exports['av.Speaker'] = {
     test.done();
   },
 
-  sayEvent: function(test) {
+  sayEvent(test) {
     test.expect(1);
-    var speaker = new av.Speaker();
+    const speaker = new av.Speaker();
     speaker.on('say', () => {
       test.ok(true);
       test.done();
@@ -222,29 +226,29 @@ exports['av.Speaker'] = {
     speaker.say('Hi!');
   },
 
-  timeupdate: function(test) {
+  timeupdate(test) {
     test.expect(0);
     this.clock = this.sandbox.useFakeTimers();
-    var speaker = new av.Speaker();
+    const speaker = new av.Speaker();
     speaker.say('Hi!');
     speaker.on('timeupdate', test.done);
     this.clock.tick(101);
   },
 
-  ended: function(test) {
+  ended(test) {
     test.expect(0);
     this.clock = this.sandbox.useFakeTimers();
-    var speaker = new av.Speaker();
+    const speaker = new av.Speaker();
     speaker.say('Hi!');
     speaker.on('ended', test.done);
 
     this.emitter.emit('exit', 0, null);
   },
 
-  stop: function(test) {
+  stop(test) {
     test.expect(2);
     this.clock = this.sandbox.useFakeTimers();
-    var speaker = new av.Speaker();
+    const speaker = new av.Speaker();
     speaker.say('Hi!');
     speaker.on('stop', () => {
       test.equal(this.emitter.kill.callCount, 1);
@@ -254,10 +258,10 @@ exports['av.Speaker'] = {
     speaker.stop();
   },
 
-  stopTwice: function(test) {
+  stopTwice(test) {
     test.expect(2);
     this.clock = this.sandbox.useFakeTimers();
-    var speaker = new av.Speaker();
+    const speaker = new av.Speaker();
     speaker.say('Hi!');
     speaker.on('stop', () => {
       test.equal(this.emitter.kill.callCount, 1);
@@ -267,10 +271,10 @@ exports['av.Speaker'] = {
     speaker.stop();
   },
 
-  reasonableEspeakOptions: function(test) {
+  reasonableEspeakOptions(test) {
     test.expect(1);
     this.clock = this.sandbox.useFakeTimers();
-    var speaker = new av.Speaker();
+    const speaker = new av.Speaker();
     speaker.say('Hi!');
 
     test.deepEqual(this.spawn.lastCall.args[1], ['Hi!', '-s', 130]);

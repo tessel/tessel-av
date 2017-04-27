@@ -1,5 +1,9 @@
+'use strict';
+
+require('../common/bootstrap');
+
 exports['av'] = {
-  api: function(test) {
+  api(test) {
     test.expect(3);
     test.equal(av.hasOwnProperty('Camera'), true);
     test.equal(av.hasOwnProperty('Microphone'), true);
