@@ -17,3 +17,5 @@ public/
 eg/
 .nyc_output/
 coverage/
+Gruntfile.js
+.nycrc
