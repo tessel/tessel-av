@@ -4,13 +4,13 @@ exports['av.Speaker'] = {
   setUp(done) {
     this.sandbox = sinon.sandbox.create();
     this.emitter = new Emitter();
-    this.spawn = this.sandbox.stub(cp, 'spawn', () => {
+    this.spawn = this.sandbox.stub(cp, 'spawn').callsFake(() => {
       this.emitter = new Emitter();
       this.emitter.kill = this.sandbox.stub();
       this.emitter.stderr = new Emitter();
       return this.emitter;
     });
-    this.execSync = this.sandbox.stub(cp, 'execSync', () => new Buffer(aplayListDevices));
+    this.execSync = this.sandbox.stub(cp, 'execSync').callsFake(() => new Buffer(aplayListDevices));
 
     done();
   },

@@ -4,7 +4,7 @@ exports['av.Microphone'] = {
   setUp(done) {
     this.sandbox = sinon.sandbox.create();
     this.emitter = new Emitter();
-    this.spawn = this.sandbox.stub(cp, 'spawn', () => {
+    this.spawn = this.sandbox.stub(cp, 'spawn').callsFake(() => {
       this.emitter = new Emitter();
       this.emitter.kill = this.sandbox.stub();
       this.emitter.stderr = new Emitter();
@@ -31,6 +31,31 @@ exports['av.Microphone'] = {
   emitter(test) {
     test.expect(1);
     test.equal((new av.Microphone()) instanceof Emitter, true);
+    test.done();
+  },
+
+  listening(test) {
+    test.expect(1);
+
+    const buffer = new Buffer([0]);
+    const mic = new av.Microphone();
+
+    const listen = mic.listen();
+
+    test.equal(mic.isListening, true);
+    test.done();
+  },
+
+  listenReturnsActiveCaptureStream(test) {
+    test.expect(2);
+
+    const buffer = new Buffer([0]);
+    const mic = new av.Microphone();
+
+    const listen = mic.listen();
+
+    test.equal(mic.isListening, true);
+    test.equal(mic.listen(), listen);
     test.done();
   },
 
@@ -101,6 +126,38 @@ exports['av.Microphone'] = {
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'arecord');
     test.deepEqual(this.spawn.lastCall.args[1], ['foo', 'bar']);
+    test.done();
+  },
+
+  listenOptions(test) {
+    test.expect(3);
+
+    const mic = new av.Microphone();
+
+    mic.listen({
+      '-c': 1,
+      '-f': 'cd',
+    });
+
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'arecord');
+    test.deepEqual(this.spawn.lastCall.args[1], ['-c', 1, '-f', 'cd']);
+    test.done();
+  },
+
+  listenOptionsOneCharacter(test) {
+    test.expect(3);
+
+    const mic = new av.Microphone();
+
+    mic.listen({
+      c: 1,
+      f: 'cd',
+    });
+
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'arecord');
+    test.deepEqual(this.spawn.lastCall.args[1], ['-c', 1, '-f', 'cd']);
     test.done();
   },
 

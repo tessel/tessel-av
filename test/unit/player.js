@@ -8,8 +8,8 @@ exports['av.Player'] = {
     this.emitter = new Emitter();
     this.emitter.kill = this.sandbox.stub();
     this.emitter.stderr = new Emitter();
-    this.spawn = this.sandbox.stub(cp, 'spawn', () => this.emitter);
-    this.execSync = this.sandbox.stub(cp, 'execSync', () => new Buffer(aplayListDevices));
+    this.spawn = this.sandbox.stub(cp, 'spawn').callsFake(() => this.emitter);
+    this.execSync = this.sandbox.stub(cp, 'execSync').callsFake(() => new Buffer(aplayListDevices));
     done();
   },
 
@@ -35,7 +35,7 @@ exports['av.Player'] = {
 
     this.wmSet = this.sandbox.spy(WeakMap.prototype, 'set');
     this.execSync.restore();
-    this.execSync = this.sandbox.stub(cp, 'execSync', () => new Buffer(aplayListDevices.replace('card 1:', 'card 0:')));
+    this.execSync = this.sandbox.stub(cp, 'execSync').callsFake(() => new Buffer(aplayListDevices.replace('card 1:', 'card 0:')));
 
     new av.Player('foo.mp3');
 
@@ -56,12 +56,14 @@ exports['av.Player'] = {
   },
 
   unsupportedExtention(test) {
-    test.expect(5);
+    test.expect(7);
     test.throws(() => new av.Player('foo.wav'));
     test.throws(() => new av.Player('foo.m4a'));
     test.throws(() => new av.Player('foo.mov'));
     test.throws(() => new av.Player('foo.ogg'));
     test.throws(() => new av.Player('foo.opus'));
+    test.throws(() => new av.Player('foo'));
+    test.throws(() => new av.Player(''));
     test.done();
   },
 
@@ -81,6 +83,15 @@ exports['av.Player'] = {
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'madplay');
     test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 0, '-o', '/dev/dsp1']);
+    test.done();
+  },
+
+  playAlreadyActive(test) {
+    test.expect(1);
+    const player = new av.Player('foo.mp3');
+    player.play();
+
+    test.equal(player.play(), player);
     test.done();
   },
 
@@ -168,16 +179,12 @@ exports['av.Player'] = {
   },
 
   stopTwice(test) {
-    test.expect(2);
-    this.clock = this.sandbox.useFakeTimers();
+    test.expect(1);
     const player = new av.Player('foo.mp3');
     player.play();
-    player.on('stop', () => {
-      test.equal(this.emitter.kill.callCount, 1);
-      test.equal(this.emitter.kill.lastCall.args[0], 'SIGTERM');
-      test.done();
-    });
     player.stop();
+    test.equal(player.stop(), player);
+    test.done();
   },
 
   pause(test) {
@@ -446,13 +453,13 @@ exports['av.Player'] = {
     test.done();
   },
 
-  playFromObject(test) {
+  playOptions(test) {
     test.expect(4);
     const player = new av.Player();
     const args = {
       file: 'foo.mp3',
       '-a': 10,
-      '-r': 2
+      '-r': 2,
     };
     player.play(args);
 
@@ -460,6 +467,57 @@ exports['av.Player'] = {
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'madplay');
     test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-a', 10, '-r', 2, '-o', '/dev/dsp1']);
+    test.done();
+  },
+
+  playOptionsOneCharacter(test) {
+    test.expect(4);
+    const player = new av.Player();
+    const args = {
+      file: 'foo.mp3',
+      a: 10,
+      r: 2,
+    };
+    player.play(args);
+
+    test.equal(player.isPlaying, true);
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'madplay');
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-a', 10, '-r', 2, '-o', '/dev/dsp1']);
+    test.done();
+  },
+
+  playOptionsNoFile(test) {
+    test.expect(2);
+    const player = new av.Player();
+    const args = {
+      a: 10,
+      r: 2,
+    };
+    player.play(args);
+
+    test.equal(player.isPlaying, false);
+    test.equal(this.spawn.callCount, 0);
+    test.done();
+  },
+
+  playFileAtTime(test) {
+    test.expect(4);
+    const player = new av.Player();
+    player.play('foo.mp3', '00:00:10');
+
+    test.equal(player.isPlaying, true);
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'madplay');
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 10, '-o', '/dev/dsp1']);
+    test.done();
+  },
+
+  playFileAtBogusTime(test) {
+    test.expect(1);
+    const player = new av.Player();
+
+    test.throws(() => player.play('foo.mp3', 'bogus'));
     test.done();
   },
   // To Do: more detailed tests for pause time updates

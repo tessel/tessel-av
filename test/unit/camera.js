@@ -6,7 +6,7 @@ exports['av.Camera'] = {
   setUp(done) {
     this.sandbox = sinon.sandbox.create();
     this.emitter = new Emitter();
-    this.spawn = this.sandbox.stub(cp, 'spawn', () => {
+    this.spawn = this.sandbox.stub(cp, 'spawn').callsFake(() => {
       this.emitter = new Emitter();
       this.emitter.kill = this.sandbox.stub();
       this.emitter.stderr = new Emitter();
@@ -14,6 +14,7 @@ exports['av.Camera'] = {
       return this.emitter;
     });
 
+    this.wmSet = this.sandbox.spy(WeakMap.prototype, 'set');
     this.write = this.sandbox.stub(Writable.prototype, 'write');
 
     done();
@@ -42,11 +43,120 @@ exports['av.Camera'] = {
     test.done();
   },
 
+  optionsAreString(test) {
+    test.expect(1);
+
+    const url = 'http://127.0.0.1:3000/?action=stream';
+    const cam = new av.Camera(url);
+
+    test.equal(cam.url, url);
+    test.done();
+  },
+
+  optionsHaveDimensionsString(test) {
+    test.expect(2);
+
+    const options = {
+      dimensions: '320x240',
+    };
+    const cam = new av.Camera(options);
+    test.equal(cam.dimensions, options.dimensions);
+    test.equal(this.wmSet.lastCall.args[1].mjpg.dimensions, options.dimensions);
+    test.done();
+  },
+
+  optionsHaveWidthHeight(test) {
+    test.expect(2);
+
+    const options = {
+      width: 320,
+      height: 240,
+    };
+    const cam = new av.Camera(options);
+
+    test.equal(cam.dimensions, '320x240');
+    test.equal(this.wmSet.lastCall.args[1].mjpg.dimensions, '320x240');
+    test.done();
+  },
+
+  optionsHaveFPS(test) {
+    test.expect(1);
+
+    const options = {
+      fps: 1000,
+    };
+    const cam = new av.Camera(options);
+
+    test.equal(this.wmSet.lastCall.args[1].mjpg.fps, options.fps);
+    test.done();
+  },
+
+  optionsHaveQuality(test) {
+    test.expect(1);
+
+    const options = {
+      quality: 100,
+    };
+    const cam = new av.Camera(options);
+
+    test.equal(this.wmSet.lastCall.args[1].mjpg.quality, options.quality);
+    test.done();
+  },
+
+  optionsHavePort(test) {
+    test.expect(1);
+
+    const options = {
+      port: 1337,
+    };
+    const cam = new av.Camera(options);
+
+    test.equal(this.wmSet.lastCall.args[1].mjpg.port, options.port);
+    test.done();
+  },
+
+  optionsHaveDevice(test) {
+    test.expect(1);
+
+    const options = {
+      device: '/dev/video1',
+    };
+    const cam = new av.Camera(options);
+
+    test.equal(this.wmSet.lastCall.args[1].mjpg.device, options.device);
+    test.done();
+  },
+
+  optionsHaveTimeout(test) {
+    test.expect(1);
+
+    const options = {
+      timeout: 1,
+    };
+    const cam = new av.Camera(options);
+
+    test.equal(this.wmSet.lastCall.args[1].remote.timeout, options.timeout);
+    test.done();
+  },
+
+  optionsHaveUrl(test) {
+    test.expect(1);
+
+    const url = 'http://127.0.0.1:3000/?action=stream';
+    const options = {
+      url,
+    };
+    const cam = new av.Camera(options);
+
+    test.equal(this.wmSet.lastCall.args[1].remote.url, options.url);
+    test.done();
+  },
+
   captureReadable(test) {
     test.expect(2);
 
-    var cam = new av.Camera();
-    var capture = cam.capture();
+    const cam = new av.Camera();
+    const capture = cam.capture();
 
     test.equal(capture instanceof CaptureStream, true);
     test.equal(capture instanceof Readable, true);
@@ -57,9 +167,9 @@ exports['av.Camera'] = {
   captureToPipe(test) {
     test.expect(5);
 
-    var buffer = new Buffer([0]);
-    var cam = new av.Camera();
-    var writable = new Writable();
+    const buffer = new Buffer([0]);
+    const cam = new av.Camera();
+    const writable = new Writable();
 
     writable.on('pipe', () => {
       test.ok(true);
@@ -85,9 +195,9 @@ exports['av.Camera'] = {
   captureMultiple(test) {
     test.expect(8);
 
-    var buffer = new Buffer([0]);
-    var cam = new av.Camera();
-    var writable = new Writable();
+    const buffer = new Buffer([0]);
+    const cam = new av.Camera();
+    const writable = new Writable();
 
     this.sandbox.spy(cam, 'capture');
     this.sandbox.spy(cam, 'stream');
@@ -116,7 +226,7 @@ exports['av.Camera'] = {
   spawned(test) {
     test.expect(3);
 
-    var cam = new av.Camera();
+    const cam = new av.Camera();
 
     cam.capture();
 
@@ -135,7 +245,7 @@ exports['av.Camera'] = {
   stream(test) {
     test.expect(1);
 
-    var cam = new av.Camera();
+    const cam = new av.Camera();
 
     cam.on('data', () => {
       test.ok(true);

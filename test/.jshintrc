@@ -14,7 +14,7 @@
   "node": true,
   "strict": false,
   "esnext": true,
-  "unused": true,
+  "unused": false,
   "globals": {
     "exports": true,
     "Promise": true,
