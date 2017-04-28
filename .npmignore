@@ -15,3 +15,5 @@ wip/
 server.js
 public/
 eg/
+.nyc_output/
+coverage/
