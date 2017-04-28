@@ -1,8 +1,10 @@
+'use strict';
+
 // System Objects
-var cp = require('child_process');
+const cp = require('child_process');
 
 // Third Party Dependencies
-var tags = require('common-tags');
+const tags = require('common-tags');
 
 
 module.exports = function(grunt) {
@@ -89,11 +91,11 @@ module.exports = function(grunt) {
 
 
   // Support running a single test suite
-  grunt.registerTask('nodeunit:only', 'Run a single test specified by a target; usage: "grunt nodeunit:only:<module-name>[.js]"', function(file) {
+  grunt.registerTask('nodeunit:only', 'Run a single test specified by a target; usage: "grunt nodeunit:only:<module-name>[.js]"', file => {
     if (file) {
       grunt.config('nodeunit.tests', [
         'test/common/bootstrap.js',
-        'test/unit/' + file + '.js'
+        `test/unit/${file}.js`
       ]);
     }
 
@@ -101,11 +103,11 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('changelog', '"changelog", "changelog:v0.0.0..v0.0.2" or "changelog:v0.0.0"', (arg) => {
-    var done = grunt.task.current.async();
-    var tags = cp.execSync('git tag --sort version:refname').toString().split('\n');
-    var tagIndex = -1;
-    var range;
-    var revisionRange;
+    const done = grunt.task.current.async();
+    const tags = cp.execSync('git tag --sort version:refname').toString().split('\n');
+    let tagIndex = -1;
+    let range;
+    let revisionRange;
 
     if (!arg) {
       // grunt changelog
@@ -144,7 +146,7 @@ module.exports = function(grunt) {
         return;
       }
 
-      var rows = result.split('\n').filter(commit => {
+      const rows = result.split('\n').filter(commit => {
         return !commit.includes('|Merge ') && !commit.includes(range[0]);
       });
 
@@ -163,4 +165,3 @@ function changelog(rows) {
 ${rows.join('\n')}
 `;
 }
-
