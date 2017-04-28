@@ -1,0 +1,8 @@
+{
+  "reporter": [
+    "lcov"
+  ],
+  "include": [
+    "lib/**/!(install)*.js"
+  ]
+}

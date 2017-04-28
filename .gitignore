@@ -5,3 +5,5 @@ wip/
 *.log
 *.node
 captures/*.jpg
+.nyc_output/
+coverage/
