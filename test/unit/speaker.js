@@ -26,9 +26,9 @@ exports['av.Speaker'] = {
     test.done();
   },
 
-  fileArgGetsAPlayerInstance(test) {
+  mp3fileArgNoLongerSupported(test) {
     test.expect(1);
-    test.equal((new av.Speaker('foo.mp3')) instanceof Player, true);
+    test.throws(() => new av.Speaker('foo.mp3'));
     test.done();
   },
 
@@ -258,6 +258,18 @@ exports['av.Speaker'] = {
     speaker.stop();
   },
 
+  stopIsNotSpeaking(test) {
+    test.expect(1);
+    this.clock = this.sandbox.useFakeTimers();
+    const speaker = new av.Speaker();
+
+    this.sandbox.spy(speaker, 'emit');
+
+    speaker.stop();
+    test.equal(speaker.emit.callCount, 0);
+    test.done();
+  },
+
   stopTwice(test) {
     test.expect(2);
     this.clock = this.sandbox.useFakeTimers();
@@ -269,6 +281,7 @@ exports['av.Speaker'] = {
       test.done();
     });
     speaker.stop();
+    speaker.stop();
   },
 
   reasonableEspeakOptions(test) {
@@ -278,6 +291,54 @@ exports['av.Speaker'] = {
     speaker.say('Hi!');
 
     test.deepEqual(this.spawn.lastCall.args[1], ['Hi!', '-s', 130]);
+    test.done();
+  },
+
+  sayOptions(test) {
+    test.expect(4);
+    const speaker = new av.Speaker();
+    const args = {
+      phrase: 'Hi!',
+      '-a': 10,
+      '-p': 50,
+    };
+    speaker.say(args);
+
+    test.equal(speaker.isSpeaking, true);
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'espeak');
+    test.deepEqual(this.spawn.lastCall.args[1], [ 'Hi!', '-a', 10, '-p', 50, '-s', 130 ]);
+    test.done();
+  },
+
+  sayOptionsOneCharacter(test) {
+    test.expect(4);
+    const speaker = new av.Speaker();
+    const args = {
+      phrase: 'Hi!',
+      a: 10,
+      p: 50,
+    };
+    speaker.say(args);
+
+    test.equal(speaker.isSpeaking, true);
+    test.equal(this.spawn.callCount, 1);
+    test.equal(this.spawn.lastCall.args[0], 'espeak');
+    test.deepEqual(this.spawn.lastCall.args[1], [ 'Hi!', '-a', 10, '-p', 50, '-s', 130 ]);
+    test.done();
+  },
+
+  sayOptionsNoPhrase(test) {
+    test.expect(2);
+    const speaker = new av.Speaker();
+    const args = {
+      a: 10,
+      p: 50,
+    };
+    speaker.say(args);
+
+    test.equal(speaker.isSpeaking, false);
+    test.equal(this.spawn.callCount, 0);
     test.done();
   },
 };

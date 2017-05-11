@@ -13,6 +13,7 @@ exports['av.Microphone'] = {
     });
 
     this.write = this.sandbox.stub(Writable.prototype, 'write');
+    this.wmSet = this.sandbox.spy(WeakMap.prototype, 'set');
 
     done();
   },
@@ -161,4 +162,116 @@ exports['av.Microphone'] = {
     test.done();
   },
 
+  monitorWithoutCaptureStream(test) {
+    test.expect(5);
+
+    const mic = new av.Microphone();
+    const state = this.wmSet.lastCall.args[1];
+
+    state.cs = {
+      pipe: this.sandbox.stub(),
+    };
+
+    mic.listen({
+      c: 1,
+      f: 'cd',
+    });
+
+    mic.monitor();
+
+    test.equal(this.spawn.callCount, 2);
+    test.equal(this.spawn.lastCall.args[0], 'aplay');
+    test.deepEqual(this.spawn.lastCall.args[1], [ '-f', 'cd' ]);
+    test.equal(state.cs.pipe.callCount, 1);
+    test.equal(state.cs.pipe.lastCall.args[0], state.aplay.stdin);
+    test.done();
+  },
+
+  monitorWithCaptureStream(test) {
+    test.expect(5);
+
+    const mic = new av.Microphone();
+    const state = this.wmSet.lastCall.args[1];
+
+    state.cs = {
+      pipe: this.sandbox.stub(),
+    };
+
+    mic.listen({
+      c: 1,
+      f: 'cd',
+    });
+
+    mic.monitor(state.cs);
+
+    test.equal(this.spawn.callCount, 2);
+    test.equal(this.spawn.lastCall.args[0], 'aplay');
+    test.deepEqual(this.spawn.lastCall.args[1], [ '-f', 'cd' ]);
+    test.equal(state.cs.pipe.callCount, 1);
+    test.equal(state.cs.pipe.lastCall.args[0], state.aplay.stdin);
+    test.done();
+  },
+
+  stop(test) {
+    test.expect(4);
+    this.clock = this.sandbox.useFakeTimers();
+    const mic = new av.Microphone();
+    mic.listen();
+    test.equal(mic.isListening, true);
+    mic.on('stop', () => {
+      test.equal(mic.isListening, false);
+      test.equal(this.emitter.kill.callCount, 1);
+      test.equal(this.emitter.kill.lastCall.args[0], 'SIGTERM');
+      test.done();
+    });
+    mic.stop();
+  },
+
+  stopListenAndMonitor(test) {
+    test.expect(4);
+    this.clock = this.sandbox.useFakeTimers();
+    const mic = new av.Microphone();
+    const state = this.wmSet.lastCall.args[1];
+
+    state.cs = {
+      pipe: this.sandbox.stub(),
+    };
+
+    mic.listen();
+    mic.monitor();
+    test.equal(mic.isListening, true);
+    mic.on('stop', () => {
+      test.equal(mic.isListening, false);
+      test.equal(this.emitter.kill.callCount, 1);
+      test.equal(this.emitter.kill.lastCall.args[0], 'SIGTERM');
+      test.done();
+    });
+    mic.stop();
+  },
+
+  stopIsNotSpeaking(test) {
+    test.expect(1);
+    this.clock = this.sandbox.useFakeTimers();
+    const mic = new av.Microphone();
+
+    this.sandbox.spy(mic, 'emit');
+
+    mic.stop();
+    test.equal(mic.emit.callCount, 0);
+    test.done();
+  },
+
+  stopTwice(test) {
+    test.expect(2);
+    this.clock = this.sandbox.useFakeTimers();
+    const mic = new av.Microphone();
+    mic.listen();
+    mic.on('stop', () => {
+      test.equal(this.emitter.kill.callCount, 1);
+      test.equal(this.emitter.kill.lastCall.args[0], 'SIGTERM');
+      test.done();
+    });
+    mic.stop();
+    mic.stop();
+  },
 };

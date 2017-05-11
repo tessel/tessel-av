@@ -10,6 +10,7 @@ exports['av.Player'] = {
     this.emitter.stderr = new Emitter();
     this.spawn = this.sandbox.stub(cp, 'spawn').callsFake(() => this.emitter);
     this.execSync = this.sandbox.stub(cp, 'execSync').callsFake(() => new Buffer(aplayListDevices));
+    this.wmSet = this.sandbox.spy(WeakMap.prototype, 'set');
     done();
   },
 
@@ -33,7 +34,6 @@ exports['av.Player'] = {
   deviceDefault(test) {
     test.expect(2);
 
-    this.wmSet = this.sandbox.spy(WeakMap.prototype, 'set');
     this.execSync.restore();
     this.execSync = this.sandbox.stub(cp, 'execSync').callsFake(() => new Buffer(aplayListDevices.replace('card 1:', 'card 0:')));
 
@@ -46,8 +46,6 @@ exports['av.Player'] = {
 
   deviceDetected(test) {
     test.expect(2);
-    this.wmSet = this.sandbox.spy(WeakMap.prototype, 'set');
-
     new av.Player('foo.mp3');
 
     test.equal(this.execSync.callCount, 1);

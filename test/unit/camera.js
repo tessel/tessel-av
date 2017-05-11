@@ -255,4 +255,148 @@ exports['av.Camera'] = {
 
   },
 
+  streamError(test) {
+    test.expect(11);
+
+    this.sandbox.spy(av.Camera.prototype, 'stream');
+
+    const streams = {
+      a: new Emitter(),
+      b: new Emitter(),
+    };
+
+    const cam = new av.Camera();
+    const state = this.wmSet.lastCall.args[1];
+
+    state.process = null;
+    state.stream = null;
+
+    streams.b.pipe = this.sandbox.stub();
+    streams.a.pipe = this.sandbox.stub().callsFake(() => streams.b);
+
+    this.sandbox.stub(got, 'stream').callsFake(() => streams.a);
+    this.sandbox.spy(state.remote, 'start');
+
+    test.equal(cam.stream.callCount, 1);
+    test.equal(got.stream.callCount, 0);
+    test.equal(state.remote.start.callCount, 0);
+
+    cam.stream();
+
+    // Obviously, because we just called it, but we all
+    // calls to stream() accounted for.
+    test.equal(cam.stream.callCount, 2);
+
+    test.equal(state.remote.start.callCount, 1);
+
+    test.equal(streams.a.pipe.callCount, 1);
+    test.equal(streams.b.pipe.callCount, 1);
+
+    test.equal(got.stream.callCount, 1);
+    test.equal(got.stream.lastCall.args[0], state.remote.url);
+
+    streams.a.emit('error');
+    test.equal(cam.stream.callCount, 3);
+    test.equal(got.stream.callCount, 2);
+    test.done();
+  },
+
+  streamData(test) {
+    test.expect(13);
+
+    this.sandbox.spy(av.Camera.prototype, 'stream');
+
+    const streams = {
+      a: new Emitter(),
+      b: new Emitter(),
+    };
+
+    const cam = new av.Camera();
+    const state = this.wmSet.lastCall.args[1];
+
+    state.process = null;
+    state.stream = null;
+
+    streams.b.pipe = this.sandbox.stub();
+    streams.a.pipe = this.sandbox.stub().callsFake(() => streams.b);
+
+    this.sandbox.stub(got, 'stream').callsFake(() => streams.a);
+    this.sandbox.spy(state.remote, 'start');
+
+    test.equal(cam.stream.callCount, 1);
+    test.equal(got.stream.callCount, 0);
+    test.equal(state.remote.start.callCount, 0);
+
+    cam.stream();
+
+    // Obviously, because we just called it, but we all
+    // calls to stream() accounted for.
+    test.equal(cam.stream.callCount, 2);
+
+    test.equal(state.remote.start.callCount, 1);
+
+    test.equal(streams.a.pipe.callCount, 1);
+    test.equal(streams.b.pipe.callCount, 1);
+
+    test.equal(got.stream.callCount, 1);
+    test.equal(got.stream.lastCall.args[0], state.remote.url);
+
+    test.equal(state.frame,  null);
+
+    streams.b.emit('data', 1);
+
+    test.equal(state.frame,  1);
+
+    test.equal(cam.stream.callCount, 2);
+    test.equal(got.stream.callCount, 1);
+    test.done();
+  },
+
+  streamDataError(test) {
+    test.expect(11);
+
+    this.sandbox.spy(av.Camera.prototype, 'stream');
+
+    const streams = {
+      a: new Emitter(),
+      b: new Emitter(),
+    };
+
+    const cam = new av.Camera();
+    const state = this.wmSet.lastCall.args[1];
+
+    state.process = null;
+    state.stream = null;
+
+    streams.b.pipe = this.sandbox.stub();
+    streams.a.pipe = this.sandbox.stub().callsFake(() => streams.b);
+
+    this.sandbox.stub(got, 'stream').callsFake(() => streams.a);
+    this.sandbox.spy(state.remote, 'start');
+
+    test.equal(cam.stream.callCount, 1);
+    test.equal(got.stream.callCount, 0);
+    test.equal(state.remote.start.callCount, 0);
+
+    cam.stream();
+
+    // Obviously, because we just called it, but we all
+    // calls to stream() accounted for.
+    test.equal(cam.stream.callCount, 2);
+
+    test.equal(state.remote.start.callCount, 1);
+
+    test.equal(streams.a.pipe.callCount, 1);
+    test.equal(streams.b.pipe.callCount, 1);
+
+    test.equal(got.stream.callCount, 1);
+    test.equal(got.stream.lastCall.args[0], state.remote.url);
+
+    streams.b.emit('error');
+
+    test.equal(cam.stream.callCount, 3);
+    test.equal(got.stream.callCount, 2);
+    test.done();
+  },
+
 };

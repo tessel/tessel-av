@@ -33,7 +33,7 @@
     "grunt-jscs": "^3.0.1",
     "mkdirp": "^0.5.1",
     "nyc": "^10.2.0",
-    "sinon": "^2.1.0"
+    "sinon": "^2.2.0"
   },
   "dependencies": {
     "got": "^6.3.0",
