@@ -1,6 +1,7 @@
 # tessel-av
 [![Code of Conduct](https://img.shields.io/badge/%E2%9D%A4-code%20of%20conduct-blue.svg?style=flat)](https://github.com/tessel/project/blob/master/CONDUCT.md)
 [![Travis Build Status](https://travis-ci.org/tessel/tessel-av.svg?branch=master)](https://travis-ci.org/tessel/tessel-av) 
+[![Coverage Status](https://coveralls.io/repos/github/tessel/tessel-av/badge.svg?branch=master)](https://coveralls.io/github/tessel/tessel-av?branch=master)
 
 USB Camera, Microphone, Player and Speaker API for Tessel 2
 
