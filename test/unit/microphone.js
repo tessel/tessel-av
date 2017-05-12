@@ -13,8 +13,8 @@ exports['av.Microphone'] = {
     });
 
     this.write = this.sandbox.stub(Writable.prototype, 'write');
+    this.execSync = this.sandbox.stub(cp, 'execSync').callsFake(() => new Buffer(aplayListDevices));
     this.wmSet = this.sandbox.spy(WeakMap.prototype, 'set');
-
     done();
   },
 
@@ -32,6 +32,30 @@ exports['av.Microphone'] = {
   emitter(test) {
     test.expect(1);
     test.equal((new av.Microphone()) instanceof Emitter, true);
+    test.done();
+  },
+
+  deviceDefault(test) {
+    test.expect(3);
+    new av.Microphone();
+
+    test.equal(this.execSync.callCount, 1);
+    test.equal(this.wmSet.lastCall.args[1].device.aplay, 'plughw:0,0');
+    test.equal(this.wmSet.lastCall.args[1].device.arecord, 'plughw:0,0');
+    test.done();
+  },
+
+  deviceDetected(test) {
+    test.expect(3);
+
+    this.execSync.restore();
+    this.execSync = this.sandbox.stub(cp, 'execSync').callsFake(() => new Buffer(aplayListDevices.replace('card 0:', 'card 1:')));
+
+    new av.Microphone();
+
+    test.equal(this.execSync.callCount, 1);
+    test.equal(this.wmSet.lastCall.args[1].device.aplay, 'plughw:1,0');
+    test.equal(this.wmSet.lastCall.args[1].device.arecord, 'plughw:1,0');
     test.done();
   },
 
@@ -183,7 +207,7 @@ exports['av.Microphone'] = {
     test.equal(this.spawn.lastCall.args[0], 'aplay');
     test.deepEqual(this.spawn.lastCall.args[1], ['-f', 'cd']);
     test.equal(state.cs.pipe.callCount, 1);
-    test.equal(state.cs.pipe.lastCall.args[0], state.aplay.stdin);
+    test.equal(state.cs.pipe.lastCall.args[0], state.process.aplay.stdin);
     test.done();
   },
 
@@ -208,7 +232,7 @@ exports['av.Microphone'] = {
     test.equal(this.spawn.lastCall.args[0], 'aplay');
     test.deepEqual(this.spawn.lastCall.args[1], ['-f', 'cd']);
     test.equal(state.cs.pipe.callCount, 1);
-    test.equal(state.cs.pipe.lastCall.args[0], state.aplay.stdin);
+    test.equal(state.cs.pipe.lastCall.args[0], state.process.aplay.stdin);
     test.done();
   },
 

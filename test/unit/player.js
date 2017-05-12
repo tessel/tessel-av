@@ -33,10 +33,6 @@ exports['av.Player'] = {
 
   deviceDefault(test) {
     test.expect(2);
-
-    this.execSync.restore();
-    this.execSync = this.sandbox.stub(cp, 'execSync').callsFake(() => new Buffer(aplayListDevices.replace('card 1:', 'card 0:')));
-
     new av.Player('foo.mp3');
 
     test.equal(this.execSync.callCount, 1);
@@ -46,6 +42,10 @@ exports['av.Player'] = {
 
   deviceDetected(test) {
     test.expect(2);
+
+    this.execSync.restore();
+    this.execSync = this.sandbox.stub(cp, 'execSync').callsFake(() => new Buffer(aplayListDevices.replace('card 0:', 'card 1:')));
+
     new av.Player('foo.mp3');
 
     test.equal(this.execSync.callCount, 1);
@@ -80,7 +80,7 @@ exports['av.Player'] = {
     test.equal(player.isPlaying, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'madplay');
-    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 0, '-o', '/dev/dsp1']);
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 0, '-o', '/dev/dsp']);
     test.done();
   },
 
@@ -130,8 +130,8 @@ exports['av.Player'] = {
     test.equal(this.spawn.callCount, 2);
     test.equal(this.spawn.firstCall.args[0], 'madplay');
     test.equal(this.spawn.lastCall.args[0], 'madplay');
-    test.deepEqual(this.spawn.firstCall.args[1], ['foo.mp3', '-s', 0, '-o', '/dev/dsp1']);
-    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 1, '-o', '/dev/dsp1']);
+    test.deepEqual(this.spawn.firstCall.args[1], ['foo.mp3', '-s', 0, '-o', '/dev/dsp']);
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 1, '-o', '/dev/dsp']);
     test.done();
   },
 
@@ -224,7 +224,7 @@ exports['av.Player'] = {
     test.equal(player.isPlaying, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'madplay');
-    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 0, '-o', '/dev/dsp1']);
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 0, '-o', '/dev/dsp']);
     test.done();
   },
 
@@ -236,7 +236,7 @@ exports['av.Player'] = {
     test.equal(player.isPlaying, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'madplay');
-    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 0, '-o', '/dev/dsp1']);
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 0, '-o', '/dev/dsp']);
     test.done();
   },
 
@@ -248,7 +248,7 @@ exports['av.Player'] = {
     test.equal(player.isPlaying, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'madplay');
-    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 0, '-o', '/dev/dsp1']);
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 0, '-o', '/dev/dsp']);
     test.done();
   },
 
@@ -260,7 +260,7 @@ exports['av.Player'] = {
     test.equal(player.isPlaying, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'madplay');
-    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 0, '-o', '/dev/dsp1']);
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 0, '-o', '/dev/dsp']);
     test.done();
   },
 
@@ -272,7 +272,7 @@ exports['av.Player'] = {
     test.equal(player.isPlaying, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'madplay');
-    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 1, '-o', '/dev/dsp1']);
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 1, '-o', '/dev/dsp']);
     test.done();
   },
 
@@ -284,7 +284,7 @@ exports['av.Player'] = {
     test.equal(player.isPlaying, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'madplay');
-    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 1, '-o', '/dev/dsp1']);
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 1, '-o', '/dev/dsp']);
     test.done();
   },
 
@@ -297,7 +297,7 @@ exports['av.Player'] = {
     test.equal(player.isPlaying, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'madplay');
-    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 600, '-o', '/dev/dsp1']);
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 600, '-o', '/dev/dsp']);
     test.done();
   },
 
@@ -309,7 +309,7 @@ exports['av.Player'] = {
     test.equal(player.isPlaying, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'madplay');
-    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 10, '-o', '/dev/dsp1']);
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 10, '-o', '/dev/dsp']);
     test.done();
   },
 
@@ -321,7 +321,7 @@ exports['av.Player'] = {
     test.equal(player.isPlaying, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'madplay');
-    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 10.25, '-o', '/dev/dsp1']);
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 10.25, '-o', '/dev/dsp']);
     test.done();
   },
 
@@ -334,7 +334,7 @@ exports['av.Player'] = {
     test.equal(player.isPlaying, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'madplay');
-    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 0, '-o', '/dev/dsp1']);
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 0, '-o', '/dev/dsp']);
     test.done();
   },
 
@@ -346,7 +346,7 @@ exports['av.Player'] = {
     test.equal(player.isPlaying, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'madplay');
-    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 0, '-o', '/dev/dsp1']);
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 0, '-o', '/dev/dsp']);
     test.done();
   },
 
@@ -358,7 +358,7 @@ exports['av.Player'] = {
     test.equal(player.isPlaying, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'madplay');
-    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 0, '-o', '/dev/dsp1']);
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 0, '-o', '/dev/dsp']);
     test.done();
   },
 
@@ -370,7 +370,7 @@ exports['av.Player'] = {
     test.equal(player.isPlaying, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'madplay');
-    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 1, '-o', '/dev/dsp1']);
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 1, '-o', '/dev/dsp']);
     test.done();
   },
 
@@ -382,7 +382,7 @@ exports['av.Player'] = {
     test.equal(player.isPlaying, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'madplay');
-    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 1, '-o', '/dev/dsp1']);
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 1, '-o', '/dev/dsp']);
     test.done();
   },
 
@@ -395,7 +395,7 @@ exports['av.Player'] = {
     test.equal(player.isPlaying, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'madplay');
-    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 600, '-o', '/dev/dsp1']);
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 600, '-o', '/dev/dsp']);
     test.done();
   },
 
@@ -407,7 +407,7 @@ exports['av.Player'] = {
     test.equal(player.isPlaying, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'madplay');
-    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 10, '-o', '/dev/dsp1']);
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 10, '-o', '/dev/dsp']);
     test.done();
   },
 
@@ -419,7 +419,7 @@ exports['av.Player'] = {
     test.equal(player.isPlaying, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'madplay');
-    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 10.25, '-o', '/dev/dsp1']);
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 10.25, '-o', '/dev/dsp']);
     test.done();
   },
 
@@ -431,7 +431,7 @@ exports['av.Player'] = {
     test.equal(player.isPlaying, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'madplay');
-    test.deepEqual(this.spawn.lastCall.args[1], ['bar.mp3', '-s', 0, '-o', '/dev/dsp1']);
+    test.deepEqual(this.spawn.lastCall.args[1], ['bar.mp3', '-s', 0, '-o', '/dev/dsp']);
     test.equal(player.file, 'bar.mp3');
     test.done();
   },
@@ -464,7 +464,7 @@ exports['av.Player'] = {
     test.equal(player.isPlaying, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'madplay');
-    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-a', 10, '-r', 2, '-o', '/dev/dsp1']);
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-a', 10, '-r', 2, '-o', '/dev/dsp']);
     test.done();
   },
 
@@ -481,7 +481,7 @@ exports['av.Player'] = {
     test.equal(player.isPlaying, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'madplay');
-    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-a', 10, '-r', 2, '-o', '/dev/dsp1']);
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-a', 10, '-r', 2, '-o', '/dev/dsp']);
     test.done();
   },
 
@@ -507,7 +507,7 @@ exports['av.Player'] = {
     test.equal(player.isPlaying, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'madplay');
-    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 10, '-o', '/dev/dsp1']);
+    test.deepEqual(this.spawn.lastCall.args[1], ['foo.mp3', '-s', 10, '-o', '/dev/dsp']);
     test.done();
   },
 

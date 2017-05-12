@@ -55,12 +55,13 @@ The `Camera` class produces instances that may be used to capture a still frame 
 Use the `data` event to capture a single frame and save it as a JPEG: 
 
 ```js
-var fs = require('fs');
-var path = require('path');
+'use strict';
+const fs = require('fs');
+const path = require('path');
 
-var av = require('tessel-av');
-var camera = new av.Camera();
-var capture = camera.capture();
+const av = require('tessel-av');
+const camera = new av.Camera();
+const capture = camera.capture();
 
 capture.on('data', function(data) {
   fs.writeFile(path.join(__dirname, 'captures/captured-via-data-event.jpg'), data);
@@ -71,18 +72,19 @@ capture.on('data', function(data) {
 Respond to an HTTP request by piping the stream returned by `capture()`: 
 
 ```js
-var fs = require('fs');
-var os = require('os');
-var http = require('http');
-var port = 8080;
+'use strict';
+const fs = require('fs');
+const os = require('os');
+const http = require('http');
+const port = 8080;
 
-var av = require('tessel-av');
-var camera = new av.Camera({
+const av = require('tessel-av');
+const camera = new av.Camera({
   width: 320,
   height: 240,
 });
 
-var server = http.createServer((request, response) => {
+const server = http.createServer((request, response) => {
   response.writeHead(200, { "Content-Type": "image/jpg" });
 
   camera.capture().pipe(response);
@@ -96,15 +98,16 @@ process.on("SIGINT", _ => server.close());
 A very simple example of direct-to-browser streaming:
 
 ```js
-var express = require('express');
-var app = express();
-var server = require('http').Server(app);
-var os = require('os');
-var path = require('path');
-var port = 8888;
+'use strict';
+const express = require('express');
+const app = express();
+const server = require('http').Server(app);
+const os = require('os');
+const path = require('path');
+const port = 8888;
 
-var av = require('tessel-av');
-var camera = new av.Camera();
+const av = require('tessel-av');
+const camera = new av.Camera();
 
 server.listen(port, function () {
   console.log(`http://${os.hostname()}.local:${port}`);
@@ -202,10 +205,11 @@ The following is an example of the API and events working together:
 - After 1 second pause, sound will resume  , it will resume playback from the 10 second mark, play until just after the 12 second mark, where it will stop and then play from the beginning again. 
 
 ```js
-var path = require('path');
-var av = require('tessel-av');
-var mp3 = path.join(__dirname, '20-second-nonsense.mp3');
-var sound = new av.Player(mp3);
+'use strict';
+const path = require('path');
+const av = require('tessel-av');
+const mp3 = path.join(__dirname, '20-second-nonsense.mp3');
+const sound = new av.Player(mp3);
 
 sound.play();
 
@@ -230,10 +234,11 @@ sound.on('pause', function() {
 Alternatively, an mp3 file may be provided at the `play(...)` call site: 
 
 ```js
-var path = require('path');
-var av = require('./lib/index');
-var mp3 = path.join(__dirname, 'some-audio-file.mp3');
-var sound = new av.Player();
+'use strict';
+const path = require('path');
+const av = require('./lib/index');
+const mp3 = path.join(__dirname, 'some-audio-file.mp3');
+const sound = new av.Player();
 
 // Play the mp3, starting at the 10 second mark.
 sound.play(mp3, "10");
@@ -315,12 +320,13 @@ The following is an example of the API and events working together:
 - Once spoken, the `ended` event will trigger, which will start the "cycle" through the letters of the alphabet.
 
 ```js
-var os = require('os');
-var path = require('path');
-var av = require('tessel-av');
+'use strict';
+const os = require('os');
+const path = require('path');
+const av = require('tessel-av');
 
-var alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
-var speaker = new av.Speaker();
+const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+const speaker = new av.Speaker();
 
 speaker.say(`
   Hello, this is ${os.hostname()}. 
@@ -337,11 +343,12 @@ speaker.on('ended', function() {
 Alternatively, each letter can be "queued": 
 
 ```js
-var os = require('os');
-var av = require('tessel-av');
+'use strict';
+const os = require('os');
+const av = require('tessel-av');
 
-var alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
-var speaker = new av.Speaker();
+const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+const speaker = new av.Speaker();
 
 speaker.say(`
   Hello, this is ${os.hostname()}. 

@@ -34,7 +34,7 @@ global.Speaker = require('../../lib/speaker');
 
 global.aplayListDevices = [
   '**** List of PLAYBACK Hardware Devices ****',
-  'card 1: Device [USB Audio Device], device 0: USB Audio [USB Audio]',
+  'card 0: Device [USB Audio Device], device 0: USB Audio [USB Audio]',
   '  Subdevices: 1/1',
   '  Subdevice #0: subdevice #0',
   ''

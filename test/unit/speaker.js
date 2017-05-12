@@ -3,15 +3,27 @@ require('../common/bootstrap');
 exports['av.Speaker'] = {
   setUp(done) {
     this.sandbox = sinon.sandbox.create();
-    this.emitter = new Emitter();
-    this.spawn = this.sandbox.stub(cp, 'spawn').callsFake(() => {
-      this.emitter = new Emitter();
-      this.emitter.kill = this.sandbox.stub();
-      this.emitter.stderr = new Emitter();
-      return this.emitter;
+    this.espeak = new Emitter();
+    this.aplay = new Emitter();
+    this.spawn = this.sandbox.stub(cp, 'spawn').callsFake((binary) => {
+      if (binary === 'espeak') {
+        this.espeak = new Emitter();
+        this.espeak.kill = this.sandbox.stub();
+        this.espeak.stderr = new Emitter();
+        this.espeak.stdout = new Emitter();
+        this.espeak.stdout.pipe = this.sandbox.stub();
+        return this.espeak;
+      } else {
+        this.aplay = new Emitter();
+        this.aplay.kill = this.sandbox.stub();
+        this.aplay.stderr = new Emitter();
+        this.aplay.stdout = new Emitter();
+        this.aplay.stdin = new Emitter();
+        return this.aplay;
+      }
     });
     this.execSync = this.sandbox.stub(cp, 'execSync').callsFake(() => new Buffer(aplayListDevices));
-
+    this.wmSet = this.sandbox.spy(WeakMap.prototype, 'set');
     done();
   },
 
@@ -26,15 +38,77 @@ exports['av.Speaker'] = {
     test.done();
   },
 
-  mp3fileArgNoLongerSupported(test) {
-    test.expect(1);
-    test.throws(() => new av.Speaker('foo.mp3'));
-    test.done();
-  },
-
   emitter(test) {
     test.expect(1);
     test.equal((new av.Speaker()) instanceof Emitter, true);
+    test.done();
+  },
+
+  deviceDefault(test) {
+    test.expect(2);
+    new av.Speaker();
+
+    test.equal(this.execSync.callCount, 1);
+    test.equal(this.wmSet.lastCall.args[1].device, 'plughw:0,0');
+    test.done();
+  },
+
+  deviceDetected(test) {
+    test.expect(2);
+
+    this.execSync.restore();
+    this.execSync = this.sandbox.stub(cp, 'execSync').callsFake(() => new Buffer(aplayListDevices.replace('card 0:', 'card 1:')));
+
+    new av.Speaker();
+
+    test.equal(this.execSync.callCount, 1);
+    test.equal(this.wmSet.lastCall.args[1].device, 'plughw:1,0');
+    test.done();
+  },
+
+  deviceDefaultUsesDefault(test) {
+    test.expect(3);
+
+    const speaker = new av.Speaker();
+
+    test.equal(this.execSync.callCount, 1);
+    test.equal(this.wmSet.lastCall.args[1].device, 'plughw:0,0');
+
+    speaker.say('hello');
+
+    test.equal(this.spawn.callCount, 1);
+    test.done();
+  },
+
+  deviceDetectedUsesAplay(test) {
+    test.expect(7);
+
+    this.execSync.restore();
+    this.execSync = this.sandbox.stub(cp, 'execSync').callsFake(() => new Buffer(aplayListDevices.replace('card 0:', 'card 1:')));
+
+    const speaker = new av.Speaker();
+
+    test.equal(this.execSync.callCount, 1);
+    test.equal(this.wmSet.lastCall.args[1].device, 'plughw:1,0');
+
+    speaker.say('hello');
+
+    test.equal(this.spawn.callCount, 2);
+    test.deepEqual(this.spawn.firstCall.args, ['espeak', ['hello', '-s', 130, '--stdout']]);
+    test.deepEqual(this.spawn.lastCall.args, ['aplay', ['-f', 'cd', '-D', 'plughw:1,0']]);
+
+
+    speaker.stop();
+
+    test.equal(this.espeak.kill.callCount, 1);
+    test.equal(this.aplay.kill.callCount, 1);
+
+    test.done();
+  },
+
+  mp3fileArgNoLongerSupported(test) {
+    test.expect(1);
+    test.throws(() => new av.Speaker('foo.mp3'));
     test.done();
   },
 
@@ -87,6 +161,7 @@ exports['av.Speaker'] = {
 
   sayZero(test) {
     test.expect(4);
+
     const speaker = new av.Speaker();
     speaker.say(0);
 
@@ -99,6 +174,8 @@ exports['av.Speaker'] = {
 
   sayString(test) {
     test.expect(4);
+
+
     const speaker = new av.Speaker();
     speaker.say('hello');
 
@@ -180,8 +257,8 @@ exports['av.Speaker'] = {
     speaker.say(b);
 
 
-    this.emitter.emit('exit', 0, null);
-    this.emitter.emit('exit', 0, null);
+    this.espeak.emit('exit', 0, null);
+    this.espeak.emit('exit', 0, null);
 
     test.equal(this.spawn.callCount, 2);
 
@@ -206,9 +283,9 @@ exports['av.Speaker'] = {
     speaker.on('empty', empty);
 
 
-    this.emitter.emit('exit', 0, null); // a is done
-    this.emitter.emit('exit', 0, null); // b is done
-    this.emitter.emit('exit', 0, null); // c is done
+    this.espeak.emit('exit', 0, null); // a is done
+    this.espeak.emit('exit', 0, null); // b is done
+    this.espeak.emit('exit', 0, null); // c is done
 
     test.equal(ended.callCount, 3);
     test.equal(empty.callCount, 1);
@@ -242,7 +319,7 @@ exports['av.Speaker'] = {
     speaker.say('Hi!');
     speaker.on('ended', test.done);
 
-    this.emitter.emit('exit', 0, null);
+    this.espeak.emit('exit', 0, null);
   },
 
   stop(test) {
@@ -251,8 +328,8 @@ exports['av.Speaker'] = {
     const speaker = new av.Speaker();
     speaker.say('Hi!');
     speaker.on('stop', () => {
-      test.equal(this.emitter.kill.callCount, 1);
-      test.equal(this.emitter.kill.lastCall.args[0], 'SIGTERM');
+      test.equal(this.espeak.kill.callCount, 1);
+      test.equal(this.espeak.kill.lastCall.args[0], 'SIGTERM');
       test.done();
     });
     speaker.stop();
@@ -276,8 +353,8 @@ exports['av.Speaker'] = {
     const speaker = new av.Speaker();
     speaker.say('Hi!');
     speaker.on('stop', () => {
-      test.equal(this.emitter.kill.callCount, 1);
-      test.equal(this.emitter.kill.lastCall.args[0], 'SIGTERM');
+      test.equal(this.espeak.kill.callCount, 1);
+      test.equal(this.espeak.kill.lastCall.args[0], 'SIGTERM');
       test.done();
     });
     speaker.stop();
