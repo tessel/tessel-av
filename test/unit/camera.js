@@ -341,11 +341,11 @@ exports['av.Camera'] = {
     test.equal(got.stream.callCount, 1);
     test.equal(got.stream.lastCall.args[0], state.remote.url);
 
-    test.equal(state.frame,  null);
+    test.equal(state.frame, null);
 
     streams.b.emit('data', 1);
 
-    test.equal(state.frame,  1);
+    test.equal(state.frame, 1);
 
     test.equal(cam.stream.callCount, 2);
     test.equal(got.stream.callCount, 1);

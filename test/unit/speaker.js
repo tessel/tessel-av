@@ -307,7 +307,7 @@ exports['av.Speaker'] = {
     test.equal(speaker.isSpeaking, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'espeak');
-    test.deepEqual(this.spawn.lastCall.args[1], [ 'Hi!', '-a', 10, '-p', 50, '-s', 130 ]);
+    test.deepEqual(this.spawn.lastCall.args[1], ['Hi!', '-a', 10, '-p', 50, '-s', 130]);
     test.done();
   },
 
@@ -324,7 +324,7 @@ exports['av.Speaker'] = {
     test.equal(speaker.isSpeaking, true);
     test.equal(this.spawn.callCount, 1);
     test.equal(this.spawn.lastCall.args[0], 'espeak');
-    test.deepEqual(this.spawn.lastCall.args[1], [ 'Hi!', '-a', 10, '-p', 50, '-s', 130 ]);
+    test.deepEqual(this.spawn.lastCall.args[1], ['Hi!', '-a', 10, '-p', 50, '-s', 130]);
     test.done();
   },
 

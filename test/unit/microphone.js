@@ -181,7 +181,7 @@ exports['av.Microphone'] = {
 
     test.equal(this.spawn.callCount, 2);
     test.equal(this.spawn.lastCall.args[0], 'aplay');
-    test.deepEqual(this.spawn.lastCall.args[1], [ '-f', 'cd' ]);
+    test.deepEqual(this.spawn.lastCall.args[1], ['-f', 'cd']);
     test.equal(state.cs.pipe.callCount, 1);
     test.equal(state.cs.pipe.lastCall.args[0], state.aplay.stdin);
     test.done();
@@ -206,7 +206,7 @@ exports['av.Microphone'] = {
 
     test.equal(this.spawn.callCount, 2);
     test.equal(this.spawn.lastCall.args[0], 'aplay');
-    test.deepEqual(this.spawn.lastCall.args[1], [ '-f', 'cd' ]);
+    test.deepEqual(this.spawn.lastCall.args[1], ['-f', 'cd']);
     test.equal(state.cs.pipe.callCount, 1);
     test.equal(state.cs.pipe.lastCall.args[0], state.aplay.stdin);
     test.done();
