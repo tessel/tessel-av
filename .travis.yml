@@ -5,3 +5,5 @@ before_install:
   - npm install -g grunt-cli
 script:
   - grunt
+after_success:
+  - npm run coveralls

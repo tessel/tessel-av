@@ -3,6 +3,6 @@
     "lcov"
   ],
   "include": [
-    "lib/**/!(install)*.js"
+    "lib/**/!(install|array-includes-shim)*.js"
   ]
 }
