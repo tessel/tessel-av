@@ -3,8 +3,7 @@
 [![Travis Build Status](https://travis-ci.org/tessel/tessel-av.svg?branch=master)](https://travis-ci.org/tessel/tessel-av) 
 [![Coverage Status](https://coveralls.io/repos/github/tessel/tessel-av/badge.svg?branch=master)](https://coveralls.io/github/tessel/tessel-av?branch=master)
 
-USB Camera, Microphone, Player and Speaker API for Tessel 2
-
+USB Camera, Microphone, MP3 Player and Text Speaker support for Tessel 2.
 
 #### This module does not and will not support the Tessel 1 Camera Module
 
