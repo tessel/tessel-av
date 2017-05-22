@@ -28,6 +28,8 @@
     "Writable": true,
     "bindings": true,
     "sinon": true,
+    "sandbox": true,
+    "shared": true,
     "CaptureStream": true,
     "av": true,
     "Camera": true,
