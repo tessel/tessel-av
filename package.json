@@ -22,8 +22,9 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "common-tags": "^1.3.1",
+    "common-tags": "^1.4.0",
     "coveralls": "^2.13.1",
+    "glob": "^7.1.2",
     "grunt": "^1.0.1",
     "grunt-cli": "^1.2.0",
     "grunt-contrib-jshint": "^1.1.0",
@@ -32,12 +33,12 @@
     "grunt-jsbeautifier": "^0.2.13",
     "grunt-jscs": "^3.0.1",
     "mkdirp": "^0.5.1",
-    "nyc": "^10.2.0",
-    "sinon": "^2.2.0"
+    "nyc": "^10.3.2",
+    "sinon": "^2.3.0"
   },
   "dependencies": {
-    "got": "^6.3.0",
-    "ip": "^1.1.3",
+    "got": "^6.7.1",
+    "ip": "^1.1.5",
     "tessel-mjpeg-consumer": "^1.1.0"
   }
 }
