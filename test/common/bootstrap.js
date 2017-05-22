@@ -1,6 +1,6 @@
 global.IS_TEST_ENV = true;
 
-// Dependencies: Built-in
+// System Objects
 global.cp = require('child_process');
 global.events = require('events');
 global.fs = require('fs');
@@ -12,11 +12,22 @@ global.Emitter = events.EventEmitter;
 global.Readable = stream.Readable;
 global.Writable = stream.Writable;
 
-
 // Dependencies: Third Party
 global.sinon = require('sinon');
 global.got = require('got');
 global.MjpegConsumer = require('tessel-mjpeg-consumer');
+
+
+// Create a sandbox
+global.sandbox = sinon.sandbox.create();
+
+// Dependencies: Internal (pre-stub/spy)
+global.shared = require('../../lib/shared');
+
+// used in the tests to check for calls that occur when
+// the dependency if first used by the component classes.
+global.sandbox.stub(cp, 'spawnSync');
+global.sandbox.spy(shared, 'killAndCatch');
 
 
 // Dependencies: Internal
