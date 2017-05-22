@@ -1,6 +1,6 @@
 {
   "name": "tessel-av",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "description": "USB Camera, Microphone, MP3 Player and Text Speaker support for Tessel 2.",
   "repository": "https://github.com/tessel/tessel-av",
   "main": "lib/index.js",
