@@ -124,7 +124,7 @@ module.exports = function(grunt) {
     grunt.task.run('nodeunit:file:' + file);
   });
 
-  grunt.registerTask('changelog', 'changelog', '"changelog:v0.0.0..v0.0.2" or "changelog:v0.0.0"', (arg) => {
+  grunt.registerTask('changelog', '"changelog", "changelog:v0.0.0..v0.0.2" or "changelog:v0.0.0"', (arg) => {
     const done = grunt.task.current.async();
     const tags = cp.execSync('git tag --sort version:refname').toString().split('\n');
     let tagIndex = -1;
