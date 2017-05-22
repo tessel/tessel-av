@@ -4,18 +4,17 @@ require('../common/bootstrap');
 
 exports['av.Player'] = {
   setUp(done) {
-    this.sandbox = sinon.sandbox.create();
     this.emitter = new Emitter();
-    this.emitter.kill = this.sandbox.stub();
+    this.emitter.kill = sandbox.stub();
     this.emitter.stderr = new Emitter();
-    this.spawn = this.sandbox.stub(cp, 'spawn').callsFake(() => this.emitter);
-    this.execSync = this.sandbox.stub(cp, 'execSync').callsFake(() => new Buffer(aplayListDevices));
-    this.wmSet = this.sandbox.spy(WeakMap.prototype, 'set');
+    this.spawn = sandbox.stub(cp, 'spawn').callsFake(() => this.emitter);
+    this.execSync = sandbox.stub(cp, 'execSync').callsFake(() => new Buffer(aplayListDevices));
+    this.wmSet = sandbox.spy(WeakMap.prototype, 'set');
     done();
   },
 
   tearDown(done) {
-    this.sandbox.restore();
+    sandbox.restore();
     done();
   },
 
@@ -44,7 +43,7 @@ exports['av.Player'] = {
     test.expect(2);
 
     this.execSync.restore();
-    this.execSync = this.sandbox.stub(cp, 'execSync').callsFake(() => new Buffer(aplayListDevices.replace('card 0:', 'card 1:')));
+    this.execSync = sandbox.stub(cp, 'execSync').callsFake(() => new Buffer(aplayListDevices.replace('card 0:', 'card 1:')));
 
     new av.Player('foo.mp3');
 
@@ -96,7 +95,7 @@ exports['av.Player'] = {
   playError(test) {
     test.expect(2);
 
-    const consoleerror = this.sandbox.stub(console, 'error');
+    const consoleerror = sandbox.stub(console, 'error');
     const player = new av.Player('foo.mp3');
 
     player.play();
@@ -114,7 +113,7 @@ exports['av.Player'] = {
 
   playPausePlay(test) {
     test.expect(5);
-    this.clock = this.sandbox.useFakeTimers();
+    this.clock = sandbox.useFakeTimers();
     const player = new av.Player('foo.mp3');
 
     player.play();
@@ -147,7 +146,7 @@ exports['av.Player'] = {
 
   timeupdate(test) {
     test.expect(0);
-    this.clock = this.sandbox.useFakeTimers();
+    this.clock = sandbox.useFakeTimers();
     const player = new av.Player('foo.mp3');
     player.play();
     player.on('timeupdate', test.done);
@@ -156,7 +155,7 @@ exports['av.Player'] = {
 
   ended(test) {
     test.expect(0);
-    this.clock = this.sandbox.useFakeTimers();
+    this.clock = sandbox.useFakeTimers();
     const player = new av.Player('foo.mp3');
     player.play();
     player.on('ended', test.done);
@@ -165,7 +164,7 @@ exports['av.Player'] = {
 
   stop(test) {
     test.expect(2);
-    this.clock = this.sandbox.useFakeTimers();
+    this.clock = sandbox.useFakeTimers();
     const player = new av.Player('foo.mp3');
     player.play();
     player.on('stop', () => {
@@ -187,7 +186,7 @@ exports['av.Player'] = {
 
   pause(test) {
     test.expect(4);
-    this.clock = this.sandbox.useFakeTimers();
+    this.clock = sandbox.useFakeTimers();
     const player = new av.Player('foo.mp3');
     player.play();
     test.equal(player.isPlaying, true);
@@ -203,7 +202,7 @@ exports['av.Player'] = {
 
   pauseTwice(test) {
     test.expect(3);
-    this.clock = this.sandbox.useFakeTimers();
+    this.clock = sandbox.useFakeTimers();
     const player = new av.Player('foo.mp3');
     player.play();
     player.pause();

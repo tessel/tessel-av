@@ -4,24 +4,23 @@ require('../common/bootstrap');
 
 exports['av.Camera'] = {
   setUp(done) {
-    this.sandbox = sinon.sandbox.create();
     this.emitter = new Emitter();
-    this.spawn = this.sandbox.stub(cp, 'spawn').callsFake(() => {
+    this.spawn = sandbox.stub(cp, 'spawn').callsFake(() => {
       this.emitter = new Emitter();
-      this.emitter.kill = this.sandbox.stub();
+      this.emitter.kill = sandbox.stub();
       this.emitter.stderr = new Emitter();
       this.emitter.stdout = new Emitter();
       return this.emitter;
     });
 
-    this.wmSet = this.sandbox.spy(WeakMap.prototype, 'set');
-    this.write = this.sandbox.stub(Writable.prototype, 'write');
+    this.wmSet = sandbox.spy(WeakMap.prototype, 'set');
+    this.write = sandbox.stub(Writable.prototype, 'write');
 
     done();
   },
 
   tearDown(done) {
-    this.sandbox.restore();
+    sandbox.restore();
     done();
   },
 
@@ -199,8 +198,8 @@ exports['av.Camera'] = {
     const cam = new av.Camera();
     const writable = new Writable();
 
-    this.sandbox.spy(cam, 'capture');
-    this.sandbox.spy(cam, 'stream');
+    sandbox.spy(cam, 'capture');
+    sandbox.spy(cam, 'stream');
 
     cam.on('stop', () => {
       test.ok(buffer.equals(buffer));
@@ -258,7 +257,7 @@ exports['av.Camera'] = {
   streamError(test) {
     test.expect(11);
 
-    this.sandbox.spy(av.Camera.prototype, 'stream');
+    sandbox.spy(av.Camera.prototype, 'stream');
 
     const streams = {
       a: new Emitter(),
@@ -271,11 +270,11 @@ exports['av.Camera'] = {
     state.process = null;
     state.stream = null;
 
-    streams.b.pipe = this.sandbox.stub();
-    streams.a.pipe = this.sandbox.stub().callsFake(() => streams.b);
+    streams.b.pipe = sandbox.stub();
+    streams.a.pipe = sandbox.stub().callsFake(() => streams.b);
 
-    this.sandbox.stub(got, 'stream').callsFake(() => streams.a);
-    this.sandbox.spy(state.remote, 'start');
+    sandbox.stub(got, 'stream').callsFake(() => streams.a);
+    sandbox.spy(state.remote, 'start');
 
     test.equal(cam.stream.callCount, 1);
     test.equal(got.stream.callCount, 0);
@@ -304,7 +303,7 @@ exports['av.Camera'] = {
   streamData(test) {
     test.expect(13);
 
-    this.sandbox.spy(av.Camera.prototype, 'stream');
+    sandbox.spy(av.Camera.prototype, 'stream');
 
     const streams = {
       a: new Emitter(),
@@ -317,11 +316,11 @@ exports['av.Camera'] = {
     state.process = null;
     state.stream = null;
 
-    streams.b.pipe = this.sandbox.stub();
-    streams.a.pipe = this.sandbox.stub().callsFake(() => streams.b);
+    streams.b.pipe = sandbox.stub();
+    streams.a.pipe = sandbox.stub().callsFake(() => streams.b);
 
-    this.sandbox.stub(got, 'stream').callsFake(() => streams.a);
-    this.sandbox.spy(state.remote, 'start');
+    sandbox.stub(got, 'stream').callsFake(() => streams.a);
+    sandbox.spy(state.remote, 'start');
 
     test.equal(cam.stream.callCount, 1);
     test.equal(got.stream.callCount, 0);
@@ -355,7 +354,7 @@ exports['av.Camera'] = {
   streamDataError(test) {
     test.expect(11);
 
-    this.sandbox.spy(av.Camera.prototype, 'stream');
+    sandbox.spy(av.Camera.prototype, 'stream');
 
     const streams = {
       a: new Emitter(),
@@ -368,11 +367,11 @@ exports['av.Camera'] = {
     state.process = null;
     state.stream = null;
 
-    streams.b.pipe = this.sandbox.stub();
-    streams.a.pipe = this.sandbox.stub().callsFake(() => streams.b);
+    streams.b.pipe = sandbox.stub();
+    streams.a.pipe = sandbox.stub().callsFake(() => streams.b);
 
-    this.sandbox.stub(got, 'stream').callsFake(() => streams.a);
-    this.sandbox.spy(state.remote, 'start');
+    sandbox.stub(got, 'stream').callsFake(() => streams.a);
+    sandbox.spy(state.remote, 'start');
 
     test.equal(cam.stream.callCount, 1);
     test.equal(got.stream.callCount, 0);

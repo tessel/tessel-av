@@ -2,24 +2,23 @@ require('../common/bootstrap');
 
 exports['av.Microphone'] = {
   setUp(done) {
-    this.sandbox = sinon.sandbox.create();
     this.emitter = new Emitter();
-    this.spawn = this.sandbox.stub(cp, 'spawn').callsFake(() => {
+    this.spawn = sandbox.stub(cp, 'spawn').callsFake(() => {
       this.emitter = new Emitter();
-      this.emitter.kill = this.sandbox.stub();
+      this.emitter.kill = sandbox.stub();
       this.emitter.stderr = new Emitter();
       this.emitter.stdout = new Emitter();
       return this.emitter;
     });
 
-    this.write = this.sandbox.stub(Writable.prototype, 'write');
-    this.execSync = this.sandbox.stub(cp, 'execSync').callsFake(() => new Buffer(aplayListDevices));
-    this.wmSet = this.sandbox.spy(WeakMap.prototype, 'set');
+    this.write = sandbox.stub(Writable.prototype, 'write');
+    this.execSync = sandbox.stub(cp, 'execSync').callsFake(() => new Buffer(aplayListDevices));
+    this.wmSet = sandbox.spy(WeakMap.prototype, 'set');
     done();
   },
 
   tearDown(done) {
-    this.sandbox.restore();
+    sandbox.restore();
     done();
   },
 
@@ -49,7 +48,7 @@ exports['av.Microphone'] = {
     test.expect(3);
 
     this.execSync.restore();
-    this.execSync = this.sandbox.stub(cp, 'execSync').callsFake(() => new Buffer(aplayListDevices.replace('card 0:', 'card 1:')));
+    this.execSync = sandbox.stub(cp, 'execSync').callsFake(() => new Buffer(aplayListDevices.replace('card 0:', 'card 1:')));
 
     new av.Microphone();
 
@@ -193,7 +192,7 @@ exports['av.Microphone'] = {
     const state = this.wmSet.lastCall.args[1];
 
     state.cs = {
-      pipe: this.sandbox.stub(),
+      pipe: sandbox.stub(),
     };
 
     mic.listen({
@@ -218,7 +217,7 @@ exports['av.Microphone'] = {
     const state = this.wmSet.lastCall.args[1];
 
     state.cs = {
-      pipe: this.sandbox.stub(),
+      pipe: sandbox.stub(),
     };
 
     mic.listen({
@@ -238,7 +237,7 @@ exports['av.Microphone'] = {
 
   stop(test) {
     test.expect(4);
-    this.clock = this.sandbox.useFakeTimers();
+    this.clock = sandbox.useFakeTimers();
     const mic = new av.Microphone();
     mic.listen();
     test.equal(mic.isListening, true);
@@ -253,12 +252,12 @@ exports['av.Microphone'] = {
 
   stopListenAndMonitor(test) {
     test.expect(4);
-    this.clock = this.sandbox.useFakeTimers();
+    this.clock = sandbox.useFakeTimers();
     const mic = new av.Microphone();
     const state = this.wmSet.lastCall.args[1];
 
     state.cs = {
-      pipe: this.sandbox.stub(),
+      pipe: sandbox.stub(),
     };
 
     mic.listen();
@@ -275,10 +274,10 @@ exports['av.Microphone'] = {
 
   stopIsNotSpeaking(test) {
     test.expect(1);
-    this.clock = this.sandbox.useFakeTimers();
+    this.clock = sandbox.useFakeTimers();
     const mic = new av.Microphone();
 
-    this.sandbox.spy(mic, 'emit');
+    sandbox.spy(mic, 'emit');
 
     mic.stop();
     test.equal(mic.emit.callCount, 0);
@@ -287,7 +286,7 @@ exports['av.Microphone'] = {
 
   stopTwice(test) {
     test.expect(2);
-    this.clock = this.sandbox.useFakeTimers();
+    this.clock = sandbox.useFakeTimers();
     const mic = new av.Microphone();
     mic.listen();
     mic.on('stop', () => {

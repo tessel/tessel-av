@@ -2,33 +2,32 @@ require('../common/bootstrap');
 
 exports['av.Speaker'] = {
   setUp(done) {
-    this.sandbox = sinon.sandbox.create();
     this.espeak = new Emitter();
     this.aplay = new Emitter();
-    this.spawn = this.sandbox.stub(cp, 'spawn').callsFake((binary) => {
+    this.spawn = sandbox.stub(cp, 'spawn').callsFake((binary) => {
       if (binary === 'espeak') {
         this.espeak = new Emitter();
-        this.espeak.kill = this.sandbox.stub();
+        this.espeak.kill = sandbox.stub();
         this.espeak.stderr = new Emitter();
         this.espeak.stdout = new Emitter();
-        this.espeak.stdout.pipe = this.sandbox.stub();
+        this.espeak.stdout.pipe = sandbox.stub();
         return this.espeak;
       } else {
         this.aplay = new Emitter();
-        this.aplay.kill = this.sandbox.stub();
+        this.aplay.kill = sandbox.stub();
         this.aplay.stderr = new Emitter();
         this.aplay.stdout = new Emitter();
         this.aplay.stdin = new Emitter();
         return this.aplay;
       }
     });
-    this.execSync = this.sandbox.stub(cp, 'execSync').callsFake(() => new Buffer(aplayListDevices));
-    this.wmSet = this.sandbox.spy(WeakMap.prototype, 'set');
+    this.execSync = sandbox.stub(cp, 'execSync').callsFake(() => new Buffer(aplayListDevices));
+    this.wmSet = sandbox.spy(WeakMap.prototype, 'set');
     done();
   },
 
   tearDown(done) {
-    this.sandbox.restore();
+    sandbox.restore();
     done();
   },
 
@@ -57,7 +56,7 @@ exports['av.Speaker'] = {
     test.expect(2);
 
     this.execSync.restore();
-    this.execSync = this.sandbox.stub(cp, 'execSync').callsFake(() => new Buffer(aplayListDevices.replace('card 0:', 'card 1:')));
+    this.execSync = sandbox.stub(cp, 'execSync').callsFake(() => new Buffer(aplayListDevices.replace('card 0:', 'card 1:')));
 
     new av.Speaker();
 
@@ -84,7 +83,7 @@ exports['av.Speaker'] = {
     test.expect(7);
 
     this.execSync.restore();
-    this.execSync = this.sandbox.stub(cp, 'execSync').callsFake(() => new Buffer(aplayListDevices.replace('card 0:', 'card 1:')));
+    this.execSync = sandbox.stub(cp, 'execSync').callsFake(() => new Buffer(aplayListDevices.replace('card 0:', 'card 1:')));
 
     const speaker = new av.Speaker();
 
@@ -267,8 +266,8 @@ exports['av.Speaker'] = {
 
   emptyQueueEmitsEmpty(test) {
     test.expect(2);
-    const ended = this.sandbox.spy();
-    const empty = this.sandbox.spy();
+    const ended = sandbox.spy();
+    const empty = sandbox.spy();
 
     const speaker = new av.Speaker();
     const a = ['foo', '-a', 10, '-p', 50];
@@ -305,7 +304,7 @@ exports['av.Speaker'] = {
 
   timeupdate(test) {
     test.expect(0);
-    this.clock = this.sandbox.useFakeTimers();
+    this.clock = sandbox.useFakeTimers();
     const speaker = new av.Speaker();
     speaker.say('Hi!');
     speaker.on('timeupdate', test.done);
@@ -314,7 +313,7 @@ exports['av.Speaker'] = {
 
   ended(test) {
     test.expect(0);
-    this.clock = this.sandbox.useFakeTimers();
+    this.clock = sandbox.useFakeTimers();
     const speaker = new av.Speaker();
     speaker.say('Hi!');
     speaker.on('ended', test.done);
@@ -324,7 +323,7 @@ exports['av.Speaker'] = {
 
   stop(test) {
     test.expect(2);
-    this.clock = this.sandbox.useFakeTimers();
+    this.clock = sandbox.useFakeTimers();
     const speaker = new av.Speaker();
     speaker.say('Hi!');
     speaker.on('stop', () => {
@@ -337,10 +336,10 @@ exports['av.Speaker'] = {
 
   stopIsNotSpeaking(test) {
     test.expect(1);
-    this.clock = this.sandbox.useFakeTimers();
+    this.clock = sandbox.useFakeTimers();
     const speaker = new av.Speaker();
 
-    this.sandbox.spy(speaker, 'emit');
+    sandbox.spy(speaker, 'emit');
 
     speaker.stop();
     test.equal(speaker.emit.callCount, 0);
@@ -349,7 +348,7 @@ exports['av.Speaker'] = {
 
   stopTwice(test) {
     test.expect(2);
-    this.clock = this.sandbox.useFakeTimers();
+    this.clock = sandbox.useFakeTimers();
     const speaker = new av.Speaker();
     speaker.say('Hi!');
     speaker.on('stop', () => {
@@ -363,7 +362,7 @@ exports['av.Speaker'] = {
 
   reasonableEspeakOptions(test) {
     test.expect(1);
-    this.clock = this.sandbox.useFakeTimers();
+    this.clock = sandbox.useFakeTimers();
     const speaker = new av.Speaker();
     speaker.say('Hi!');
 
