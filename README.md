@@ -76,7 +76,7 @@ Respond to an HTTP request by piping the stream returned by `capture()`:
 const fs = require('fs');
 const os = require('os');
 const http = require('http');
-const port = 8080;
+const port = 8888;
 
 const av = require('tessel-av');
 const camera = new av.Camera({
