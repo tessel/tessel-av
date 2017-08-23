@@ -43,6 +43,7 @@ The `Camera` class produces instances that may be used to capture a still frame 
 
 ---------------------
 
+### av.Camera Instance Methods
 
 - **`capture`** Take a still frame. Returns a `CaptureStream`, call `pipe` with a destination to send a frame of jpeg encoded data. 
 - **`stream`** Stream mjpg frames from camera. 
@@ -150,6 +151,7 @@ The `Player` class produces instances that may be used to play audio from an mp3
 
 The `Player` class constructor accepts one argument, which is optional, that specifies an mp3 file to play when the `play()` method is called. The may be omitted and supplied directly to `play(file [, time])` at a later time in the object's lifecycle.
 
+### av.Player Instance Methods
 
 - **`play([seconds])`** Play the specified file. Optionally provide a time to start at in seconds. See Allowed Time String Formats
 - **`play([ file [, seconds])`** Play the specified file. Optionally provide a time to start at in seconds. See Allowed Time String Formats
@@ -272,6 +274,15 @@ sound.on('ended', function() {
 (Prior to v0.3.0, the `av.Speaker` class was used for audio file playback, and while that still works in versions >=0.3.0, programs will need to update to use this class before 1.0.0 (estimated release: July 1st, 2016)
 
 
+### av.Speaker Initialization
+
+| Property | Type    | Value/Description  | Default  | Required        |
+|----------|---------|--------------------|----------|-----------------|
+| debug    | boolean | Log debugging information  | `false` | no |  
+
+
+### av.Speaker Instance Methods
+
 - **`say("phrase")`** Speak the phrase (string). 
 - **`say(["phrase", ...])`** Speak the phrase with additional options in an array. 
 - **`say(options)`** Speak the phrase with additional options in an object. 
@@ -283,8 +294,6 @@ sound.on('ended', function() {
   ```
 - **`stop()`** Stop playback.
 
-
-### av.Speaker Initialization
 
 Options may be _most_ of the [options supported by `espeak`](espeak.md). For example, if I wanted to set the amplitude and pitch: 
 
