@@ -31,13 +31,17 @@ The `Camera` class produces instances that may be used to capture a still frame 
 | device     | string  | The system path to the video device | `/dev/video0` | no |  
 | dimensions | string  | Valid "WxH" dimensions. Is limited to dimensions supported by the device.\* | `"800x600"` | no |
 | fps  | number  | Frames per second. Will be ignored if value is unsupported. | Per camera | no |  
-| port  | number  | Port number for the video server | 8080 | no |  
+| port  | number  | Port number for the video server | 8080 | no\*\* |  
 | quality  | number  | Set the quality from 0...1 | 1 | no |  
 | fps  | number  | Frames per second. Will be ignored if value is unsupported. | Per camera | no |  
 
 
 \* The device itself determines what dimensions are supported. Since the output comes directly from the camera hardware, invalid dimensions will be overridden by device if not supported.
 
+\*\* If there is more than one `Camera` objects instantiated, then a `port` **must** be specified for both. 
+
+
+---------------------
 
 
 - **`capture`** Take a still frame. Returns a `CaptureStream`, call `pipe` with a destination to send a frame of jpeg encoded data. 
